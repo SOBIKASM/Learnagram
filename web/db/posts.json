@@ -1,0 +1,212 @@
+{
+  "posts": [
+    {
+      "id": 1,
+      "user": {
+        "id": 101,
+        "name": "Sobika S M",
+        "username": "sobika_sm",
+        "profile_pic": "/assets/profile3.jpg"
+      },
+      "caption": "Can someone explain paging in OS with a simple example?",
+      "media": {
+        "type": "image",
+        "src": "/assets/post.jpg"
+      },
+      "likes": 12,
+      "comments": [
+        {
+          "user": {
+            "name": "Prof. Kumar",
+            "username": "kumar_prof"
+          },
+          "comment": "Paging divides memory into fixed-size blocks called pages."
+        }
+      ],
+      "timestamp": "2026-02-11T14:30:00Z"
+    },
+    {
+      "id": 2,
+      "user": {
+        "id": 102,
+        "name": "Arun Kumar",
+        "username": "arun_23",
+        "profile_pic": "/assets/profile2.jpg"
+      },
+      "caption": "Sharing my DBMS handwritten notes 📚",
+      "media": {
+        "type": "image",
+        "src": "/assets/post.jpg"
+      },
+      "likes": 25,
+      "comments": [],
+      "timestamp": "2026-02-10T10:15:00Z"
+    },
+    {
+      "id": 3,
+      "user": {
+        "id": 103,
+        "name": "Divya",
+        "username": "divya_codes",
+        "profile_pic": "/assets/profile1.jpg"
+      },
+      "caption": "Anyone preparing for tomorrow's CN test? 😭",
+      "media": {
+        "type": "text",
+        "content": "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Placeat aliquid voluptatum distinctio nobis omnis, nihil ad commodi ipsa natus sunt officia autem quas excepturi ducimus voluptatem! Eum autem omnis consequuntur?"
+      },
+      "likes": 5,
+      "comments": [
+        {
+          "user": {
+            "name": "Rahul"
+          },
+          "comment": "Yes! Let’s revise together."
+        }
+      ],
+      "timestamp": "2026-02-11T09:00:00Z"
+    }
+  ],
+  "profile":{
+      "id": 107,
+      "name": "Learnagram",
+      "username": "learnagram",
+      "profile_pic": "/assets/profile3.jpg",
+      "bio": " Building Learnagram 🚀",
+      "department": "CSE",
+      "year": "3rd Year",
+      "followers": 120,
+      "following": 80,
+      "postsCount": 12,
+      "joinedAt": "2025-08-10"
+    },
+  "users": [
+    {
+      "id": 101,
+      "name": "Sobika S M",
+      "username": "sobika_sm",
+      "profile_pic": "/assets/profile3.jpg",
+      "bio": "CSE Student | AI & ML Enthusiast | Building Learnagram 🚀",
+      "department": "CSE",
+      "year": "3rd Year",
+      "followers": 120,
+      "following": 80,
+      "postsCount": 12,
+      "joinedAt": "2025-08-10"
+    },
+    {
+      "id": 102,
+      "name": "Prof. Kumar",
+      "username": "kumar_prof",
+      "profile_pic": "/assets/profile1.jpg",
+      "bio": "Assistant Professor | Operating Systems | DBMS",
+      "department": "CSE",
+      "year": null,
+      "followers": 300,
+      "following": 20,
+      "postsCount": 45,
+      "joinedAt": "2024-01-15"
+    },
+    {
+      "id": 103,
+      "name": "Arun Kumar",
+      "username": "arun_23",
+      "profile_pic": "/assets/profile2.jpg",
+      "bio": "Love coding and coffee ☕ | CN & OS survivor",
+      "department": "CSE",
+      "year": "3rd Year",
+      "followers": 75,
+      "following": 60,
+      "postsCount": 8,
+      "joinedAt": "2025-06-20"
+    },
+    {
+      "id": 104,
+      "name": "Divya",
+      "username": "divya_codes",
+      "profile_pic": "https://via.placeholder.com/150",
+      "bio": "Frontend learner | React + Bootstrap",
+      "department": "IT",
+      "year": "2nd Year",
+      "followers": 95,
+      "following": 110,
+      "postsCount": 15,
+      "joinedAt": "2025-07-01"
+    }
+  ],
+  "story": [
+  {
+    "id": 1,
+    "user": {
+      "id": 101,
+      "name": "Sobika S M",
+      "username": "sobika_sm",
+      "profile_pic": "/assets/profile3.jpg"
+    },
+    "media": {
+      "type": "text",
+      "content": "Day 5 of OS preparation 💪"
+    },
+    "backgroundColor": "#6C63FF",
+    "mentions": [],
+    "viewers": [102, 103],
+    "createdAt": "2026-02-11T08:00:00Z",
+    "expiresAt": "2026-02-12T08:00:00Z"
+  },
+  {
+    "id": 2,
+    "user": {
+      "id": 102,
+      "name": "Prof. Kumar",
+      "username": "kumar_prof",
+      "profile_pic": "/assets/profile1.jpg"
+    },
+    "media": {
+      "type": "image",
+      "src": "/assets/os-board.jpg"
+    },
+    "backgroundColor": null,
+    "mentions": [101],
+    "viewers": [101, 103, 104],
+    "createdAt": "2026-02-11T09:30:00Z",
+    "expiresAt": "2026-02-12T09:30:00Z"
+  },
+  {
+    "id": 3,
+    "user": {
+      "id": 103,
+      "name": "Arun Kumar",
+      "username": "arun_23",
+      "profile_pic": "/assets/profile2.jpg"
+    },
+    "media": {
+      "type": "image",
+      "src": "/assets/dbms-notes.jpg"
+    },
+    "backgroundColor": null,
+    "mentions": [],
+    "viewers": [],
+    "createdAt": "2026-02-11T11:15:00Z",
+    "expiresAt": "2026-02-12T11:15:00Z"
+  },
+  {
+    "id": 4,
+    "user": {
+      "id": 104,
+      "name": "Divya",
+      "username": "divya_codes",
+      "profile_pic": "/assets/profile1.jpg"
+    },
+    "media": {
+      "type": "text",
+      "content": "Anyone up for CN revision at 6PM? @sobika_sm"
+    },
+    "backgroundColor": "#FF8C42",
+    "mentions": [101],
+    "viewers": [101],
+    "createdAt": "2026-02-11T12:00:00Z",
+    "expiresAt": "2026-02-12T12:00:00Z"
+  }
+]
+
+}

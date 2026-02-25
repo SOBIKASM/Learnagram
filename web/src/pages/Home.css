@@ -1,0 +1,80 @@
+.home-container {
+  max-width: 700px;
+  margin: auto;
+  padding: 20px;
+}
+
+/* POSTS */
+
+.posts-section {
+  margin-top: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.post-card {
+  background: white;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  transition: 0.3s ease;
+}
+
+.post-card:hover {
+  transform: translateY(-4px);
+}
+
+/* Header */
+.post-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile-pic {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.post-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.post-username {
+  font-size: 12px;
+  color: gray;
+}
+
+/* Caption */
+.post-caption {
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+/* Image */
+.post-image {
+  width: 100%;
+  margin-top: 12px;
+  border-radius: 12px;
+}
+
+/* Text Post */
+.post-text {
+  margin-top: 12px;
+  background: #f5f5f5;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  color: #333;
+}
+
+/* Footer */
+.post-footer {
+  margin-top: 12px;
+  font-size: 13px;
+  font-weight: 500;
+}
