@@ -64,6 +64,4 @@ learnagram/
 ![Curriculum Page](D:Desktop/root/web/assets/curriculum.png)
 
 🚀 Current Status
-
-Frontend completed
-Backend under development
+under development
