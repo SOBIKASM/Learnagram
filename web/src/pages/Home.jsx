@@ -71,11 +71,9 @@ function Home() {
       timestamp: "2026-02-11T09:00:00Z"
     }
   ];
-
   return (
     <div className="home-container">
       <LearnSnaps />
-
       <div className="posts-section">
         {posts.map((post) => (
           <div className="post-card" key={post.id}>
@@ -94,12 +92,10 @@ function Home() {
                 </div>
               </div>
             </div>
-
             {/* Caption */}
             <div className="post-caption">
               {post.caption}
             </div>
-
             {/* Media */}
             {post.media.type === "image" && (
               <img
@@ -108,18 +104,15 @@ function Home() {
                 className="post-image"
               />
             )}
-
             {post.media.type === "text" && (
               <div className="post-text">
                 {post.media.content}
               </div>
             )}
-
             {/* Footer */}
             <div className="post-footer">
               ❤️ {post.likes} Likes
             </div>
-
           </div>
         ))}
       </div>

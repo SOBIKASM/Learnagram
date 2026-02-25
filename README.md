@@ -37,7 +37,13 @@ FOLDER STRUCTURE
 ## Screenshots
 
 ### Home Page
-![Home Page](D:Desktop/root/web/assets/home.png)
+![Home Page](D:Desktop/root/web/assets/homepage.png)
 
 ### Profile Page
 ![Profile Page](D:Desktop/root/web/assets/profile.png)
+
+### Login Page
+![login Page](D:Desktop/root/web/assets/Loginpage.png)
+
+### Curriculum Page
+![Curriculum Page](D:Desktop/root/web/assets/curriculum.png)

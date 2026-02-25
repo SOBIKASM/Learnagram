@@ -1,7 +1,6 @@
 import './Navigation.css'
 import { Route, Routes, NavLink } from 'react-router-dom'
 
-
 import Assignments from "./Assignments"
 import Notifications from "./Notifications"
 import Message from "./Message"
@@ -34,8 +33,8 @@ import { PiBooksDuotone, PiBooksFill } from "react-icons/pi";
 import { RiMessage3Fill, RiMessage3Line, RiCompass3Fill, RiCompass3Line, } from "react-icons/ri";
 import { VscAccount } from "react-icons/vsc";
 import Explore from './Explore'
-function Navigation() {
 
+function Navigation() {
   const getNavClass = ({ isActive }) =>
     isActive ? "nav-link active" : "nav-link";
 
@@ -51,7 +50,9 @@ function Navigation() {
     { path: "profile", label: "Profile", icon: <VscAccount />, activeIcon: <VscAccount />, showOnMobile: false },
     { path: "more", label: "More", icon: <IoMenu />, activeIcon: <IoMenu />, showOnMobile: true }
   ];
+  
   const mobileVisibleItems = ["Home", "Classroom", "Assignments", "More"];
+  
   return (
     <div>
       <div className="nav-container">
@@ -61,8 +62,7 @@ function Navigation() {
           {navItems.map((item) => (
             <NavLink
               key={item.path}
-             to={item.path === "" ? "/navigation" : `/navigation/${item.path}`}
-              // Logic: If the label isn't in our mobile list, add the 'hide-on-mobile' class
+              to={item.path === "" ? "/navigation" : `/navigation/${item.path}`}  // Changed from the complex condition to just item.path
               className={(navData) =>
                 `${getNavClass(navData)} ${mobileVisibleItems.includes(item.label) ? "" : "hide-on-mobile"}`
               }

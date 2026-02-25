@@ -17,7 +17,6 @@ function Curriculum() {
         <h2 className="gradient-text">2022 Regulation</h2>
         <p className="subtitle">Bachelor of Engineering & Technology</p>
       </div>
-
       <div className="dept-feed">
         {departments.map((dept) => (
           <div key={dept.id} className="ig-card">
@@ -28,7 +27,6 @@ function Curriculum() {
                 <span className="location">Department Curriculum</span>
               </div>
             </div>
-
             <div className="card-body">
               <div className="sem-grid">
                 {[...Array(dept.semesters)].map((_, i) => (

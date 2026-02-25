@@ -15,10 +15,8 @@ const userSchema = new mongoose.Schema({
     required:true,
     enum : ["admin","prof","user"]
   },
-  
 },
 {
   timestamps:true
-
 })
 module.exports = mongoose.model("User",userSchema)

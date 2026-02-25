@@ -7,17 +7,14 @@ import './Welcome.css'
 function Welcome() {
   return (
     <div className='welcome-container'>
-
       <div className='section-1'>
         <h1>Learnagram</h1>
         <p>Connect. Learn. Grow.</p>
       </div>
-
       <div className='enter-login'>
         <Routes>
           {/* default route */}
           <Route index element={<Login />} />
-          
           {/* relative paths */}
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
