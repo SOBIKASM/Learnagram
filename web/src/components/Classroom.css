@@ -137,4 +137,245 @@
 
 .file-item {
   padding: 6px 0;
+}/* Add to existing Classroom.css */
+
+.loading, .error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 18px;
+  color: #666;
+}
+
+.error {
+  color: #dc2743;
+}
+
+.classroom-description {
+  color: #666;
+  font-size: 14px;
+  margin: 10px 0;
+}
+
+.participants-list {
+  list-style: none;
+  padding: 0;
+  margin: 15px 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.participant-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.participant-name {
+  font-weight: 500;
+}
+
+.participant-status {
+  display: flex;
+  gap: 8px;
+}
+
+.hand-raised {
+  background: #ffd700 !important;
+  color: #333 !important;
+}
+
+.live-indicator {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #dc2743;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  animation: pulse 1.5s infinite;
+}
+
+.video-placeholder {
+  position: relative;
+  height: 100%;
+  border-radius: 16px;
+  background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.video-message {
+  z-index: 1;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+.own-message {
+  background: #f0f2f5;
+  border-radius: 18px 18px 4px 18px;
+  padding: 8px 12px;
+  margin: 5px 0;
+  align-self: flex-end;
+}
+
+.message-time {
+  font-size: 10px;
+  color: #999;
+  margin-left: 8px;
+}
+
+.no-files {
+  color: #999;
+  font-style: italic;
+  padding: 10px 0;
+}
+
+.file-item {
+  padding: 8px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin: 5px 0;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.file-item:hover {
+  background: #e9ecef;
+}
+
+.file-icon {
+  margin-right: 8px;
+}
+
+.file-name {
+  font-size: 14px;
+}
+
+/* Modal styles for ClassroomList */
+.class-card-wrapper {
+  position: relative;
+}
+
+.join-btn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 8px;
+  background: #0095f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.join-btn:hover {
+  background: #0081d6;
+}
+
+.classroom-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.create-btn {
+  background: linear-gradient(45deg, #f09433, #dc2743);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.2s;
+}
+
+.create-btn:hover {
+  transform: translateY(-2px);
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 400px;
+}
+
+.modal-content h3 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.modal-content input,
+.modal-content textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.modal-content textarea {
+  resize: vertical;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.modal-actions button {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.modal-actions button:first-child {
+  background: #f0f0f0;
+  color: #666;
+}
+
+.modal-actions button:last-child {
+  background: linear-gradient(45deg, #f09433, #dc2743);
+  color: white;
+}
+
+.description {
+  color: #666;
+  font-size: 13px;
+  margin-top: 5px;
 }
