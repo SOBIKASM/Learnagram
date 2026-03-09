@@ -15,12 +15,11 @@ const ClassroomList = () => {
   useEffect(() => {
     fetchClassrooms();
   }, []);
-
   const fetchClassrooms = async () => {
     try {
       setLoading(true);
       const response = await classroomAPI.getClassrooms();
-      setClassrooms(response.data);
+      setClassrooms(response.data.classrooms || []);
       setError(null);
     } catch (err) {
       console.error("Error fetching classrooms:", err);
@@ -29,7 +28,6 @@ const ClassroomList = () => {
       setLoading(false);
     }
   };
-
   const handleCreateClassroom = async (e) => {
     e.preventDefault();
     try {
@@ -55,74 +53,38 @@ const ClassroomList = () => {
   };
 
   if (loading) return <div className="loading">Loading classrooms...</div>;
-  if (error) return <div className="error">{error}</div>;
 
   return (
     <div className="classroom-list-container">
       <div className="classroom-header">
-        <h2 className="gradient-text">Live & Upcoming Classes</h2>
-        <button 
-          className="create-btn"
-          onClick={() => setShowCreateModal(true)}
-        >
-          + Create Classroom
-        </button>
+        <h2 className="gradient-text">Your Classrooms</h2>
+        {user?.user_id?.startsWith('MTR_') && (
+          <Link to="/navigation/classroom/create" className="create-btn" style={{ textDecoration: 'none' }}>
+            + Create Classroom
+          </Link>
+        )}
       </div>
 
       <div className="class-grid">
-        {classrooms.map((cls) => (
-          <div key={cls._id} className="class-card-wrapper">
-            <Link
-              to={`/navigation/classroom/${cls._id}`}
-              className="class-card"
-            >
-              <h3>{cls.name}</h3>
-              <p>👨‍🏫 Created by: {cls.createdBy?.name || 'Unknown'}</p>
-              <p>👥 {cls.members?.length || 0} members</p>
-              {cls.description && <p className="description">{cls.description}</p>}
-            </Link>
-            {!cls.members?.includes(user?.id) && (
-              <button 
-                className="join-btn"
-                onClick={() => handleJoinClassroom(cls._id)}
+        {classrooms.length === 0 ? (
+          <div className="no-classrooms" style={{ color: '#aaa' }}>No classrooms found.</div>
+        ) : (
+          classrooms.map((cls) => (
+            <div key={cls.classroom_id} className="class-card-wrapper">
+              <Link
+                to={`/navigation/classroom/${cls.classroom_id}`}
+                className="class-card"
+                style={{ textDecoration: 'none' }}
               >
-                Join Class
-              </button>
-            )}
-          </div>
-        ))}
+                <h3>{cls.name}</h3>
+                <p>👨‍🏫 Mentor: {cls.mentor_id}</p>
+                <p>👥 Students: {cls.student_ids?.length || 0}</p>
+                <p style={{ fontSize: '0.8rem', color: '#888' }}>ID: {cls.classroom_id}</p>
+              </Link>
+            </div>
+          ))
+        )}
       </div>
-
-      {showCreateModal && (
-        <div className="modal">
-          <div className="modal-content">
-            <h3>Create New Classroom</h3>
-            <form onSubmit={handleCreateClassroom}>
-              <input
-                type="text"
-                placeholder="Classroom Name"
-                value={newClassroom.name}
-                onChange={(e) => setNewClassroom({...newClassroom, name: e.target.value})}
-                required
-              />
-              <textarea
-                placeholder="Description (optional)"
-                value={newClassroom.description}
-                onChange={(e) => setNewClassroom({...newClassroom, description: e.target.value})}
-                rows="3"
-              />
-              <div className="modal-actions">
-                <button type="button" onClick={() => setShowCreateModal(false)}>
-                  Cancel
-                </button>
-                <button type="submit" className="create-btn">
-                  Create
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

@@ -5,7 +5,7 @@ import './Login.css';
 
 function Login() {
   const [formData, setFormData] = useState({
-    username: '',
+    user_id: '',
     password: '',
   });
   const [loading, setLoading] = useState(false);
@@ -23,7 +23,9 @@ function Login() {
     e.preventDefault();
     setLoading(true);
     try {
+      console.log('Attempting login with user_id:', formData.user_id);
       await login(formData);
+      console.log('Login successful, navigating...');
       navigate('/navigation/home');
     } catch (err) {
       console.error('Login failed:', err);
@@ -32,11 +34,11 @@ function Login() {
     }
   };
 
-  // Quick fill for demo
-  const fillDemoCredentials = () => {
+  // Fix demo credentials to match your ACTUAL database
+  const fillStudentCredentials = () => {
     setFormData({
-      username: 'learnagram',
-      password: 'learnagram'
+      user_id: '22CSE001',  
+      password: 'pass123'    
     });
   };
 
@@ -45,66 +47,67 @@ function Login() {
       <div className='login-container'>
         <div className='brand-header'>
           <h1>Learnagram</h1>
-          <p className="demo-hint">✨ Demo Login: username: <strong>learnagram</strong> | password: <strong>learnagram</strong> ✨</p>
+          <p className="demo-hint">
+            ✨ Try these credentials: ✨
+          </p>
         </div>
-        
+
         {error && (
           <div className="error-message">
             {error}
           </div>
         )}
-        
+
         <form className='login-form' onSubmit={handleSubmit}>
-          <label htmlFor="username">USERNAME</label>
-          <input 
-            type="text" 
-            id="username" 
-            name="username" 
-            value={formData.username}
+          <label htmlFor="user_id">USER ID</label>
+          <input
+            type="text"
+            id="user_id"
+            name="user_id"
+            value={formData.user_id}
             onChange={handleChange}
-            placeholder='Enter username' 
+            placeholder='Enter User ID (e.g., 22CSE001)'
             autoComplete="username"
-            required 
+            required
           />
-          
+
           <label htmlFor="password">PASSWORD</label>
-          <input 
-            type="password" 
-            id="password" 
-            name="password" 
+          <input
+            type="password"
+            id="password"
+            name="password"
             value={formData.password}
             onChange={handleChange}
-            placeholder='Enter password' 
+            placeholder='Enter password'
             autoComplete="current-password"
-            required 
+            required
           />
-          
+
           <button className="submit-btn" type="submit" disabled={loading}>
             {loading ? 'Logging in...' : 'Log In'}
           </button>
 
-          <button 
-            type="button" 
-            className="demo-fill-btn" 
-            onClick={fillDemoCredentials}
-          >
-            🔑 Use Demo Credentials
-          </button>
-          
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
+            <button
+              type="button"
+              className="demo-fill-btn"
+              onClick={fillStudentCredentials}
+              style={{ width: '100%', maxWidth: '200px' }}
+            >
+              � Click to Fill Demo (Sobika)
+            </button>
+          </div>
+
           <div className="separator">
             <div className="line"></div>
             <div className="or-text">OR</div>
             <div className="line"></div>
           </div>
-          
+
           <button type="button" className="google-btn" disabled>
             <span className="google-icon">G</span> Log in with Google
           </button>
         </form>
-      </div>
-      
-      <div className='signup-box'>
-        <p>Don't have an account? <Link to="/register">Sign up</Link></p>
       </div>
     </div>
   );

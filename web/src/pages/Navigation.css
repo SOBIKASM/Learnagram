@@ -18,7 +18,8 @@ body {
   padding: 20px 12px;
   border-right: 1px solid #dbdbdb;
   background: #fff;
-  position: fixed;
+  position:fixed;
+  overflow-y: scroll;
   left: 0;
   top: 0;
 }

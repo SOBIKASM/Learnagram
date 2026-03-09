@@ -1,23 +1,56 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Create.css";
 
 const Create = () => {
-  const [postText, setPostText] = useState("");
-  const [image, setImage] = useState(null);
+  const [caption, setCaption] = useState("");
+  const [media, setMedia] = useState(null);
   const [visibility, setVisibility] = useState("Public");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem('user'));
+  const token = localStorage.getItem('token');
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
-    if (file) setImage(URL.createObjectURL(file));
+    if (file) setMedia(URL.createObjectURL(file));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log({ postText, image, visibility });
-    alert("Post Created!");
-    setPostText("");
-    setImage(null);
-    setVisibility("Public");
+    if (!caption.trim()) return;
+
+    setLoading(true);
+    try {
+      const post_id = `POST_${user.user_id}_${Date.now()}`;
+
+      const response = await fetch('http://localhost:7001/api/posts/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          post_id,
+          user_id: user.user_id,
+          caption,
+          image_url: media || null,
+          visibility
+        })
+      });
+
+      const data = await response.json();
+      if (!data.success) throw new Error(data.message || 'Failed to create post');
+
+      setCaption("");
+      setMedia(null);
+      navigate("/navigation/home");
+    } catch (err) {
+      console.error(err);
+      alert("Error creating post: " + err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -27,8 +60,9 @@ const Create = () => {
         <textarea
           className="create-textarea"
           placeholder="What's on your mind?"
-          value={postText}
-          onChange={(e) => setPostText(e.target.value)}
+          value={caption}
+          onChange={(e) => setCaption(e.target.value)}
+          required
         />
 
         <input
@@ -38,27 +72,24 @@ const Create = () => {
           className="create-file-input"
         />
 
-        {image && (
+        {media && (
           <div className="image-preview">
-            <img src={image} alt="Preview" />
+            <img src={media} alt="Preview" />
           </div>
         )}
 
         <div className="visibility-select">
           <label>
             Visibility:
-            <select
-              value={visibility}
-              onChange={(e) => setVisibility(e.target.value)}
-            >
+            <select value={visibility} onChange={(e) => setVisibility(e.target.value)}>
               <option value="Public">Public</option>
               <option value="Private">Private</option>
             </select>
           </label>
         </div>
 
-        <button type="submit" className="create-submit-btn">
-          Post
+        <button type="submit" className="create-submit-btn" disabled={loading || !caption.trim()}>
+          {loading ? "Posting..." : "Post"}
         </button>
       </form>
     </div>

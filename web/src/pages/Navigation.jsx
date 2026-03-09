@@ -10,7 +10,9 @@ import More from "./More"
 import Create from "./Create"
 import Home from "./Home"
 import ClassroomList from './ClassroomList'
-
+import CreateClassroom from './CreateClassroom'
+import CreateAssignment from './CreateAssignment'
+import DirectChat from './DirectChat';
 import Semester from "../components/Semester";
 import Classroom from "../components/Classroom"
 // --- ICONS GROUPED BY LIBRARY ---
@@ -50,9 +52,9 @@ function Navigation() {
     { path: "profile", label: "Profile", icon: <VscAccount />, activeIcon: <VscAccount />, showOnMobile: false },
     { path: "more", label: "More", icon: <IoMenu />, activeIcon: <IoMenu />, showOnMobile: true }
   ];
-  
+
   const mobileVisibleItems = ["Home", "Classroom", "Assignments", "More"];
-  
+
   return (
     <div>
       <div className="nav-container">
@@ -84,7 +86,9 @@ function Navigation() {
             <Route path='home' element={<Home />} />
             <Route path="classroom" element={<ClassroomList />} />
             <Route path="classroom/:classId" element={<Classroom />} />
+            <Route path="classroom/create" element={<CreateClassroom />} />
             <Route path="assignments" element={<Assignments />} />
+            <Route path="assignments/create" element={<CreateAssignment />} />
             <Route path="explore" element={<Explore />} />
             <Route path="create" element={<Create />} />
             <Route path="notifications" element={<Notifications />} />
@@ -93,6 +97,7 @@ function Navigation() {
             <Route path="curriculum/sem/:id" element={<Semester />} />
             <Route path="profile" element={<Profile />} />
             <Route path="more" element={<More />} />
+            <Route path="dm/:other_id" element={<DirectChat />} />
           </Routes>
         </div>
       </div>

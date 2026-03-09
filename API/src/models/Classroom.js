@@ -1,33 +1,29 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const classroomSchema = new mongoose.Schema({
+  classroom_id: {
+    type: String,
+    required: true,
+    unique: true
+  },
   name: {
     type: String,
     required: true
   },
-  description: String,
-  createdBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+  mentor_id: {
+    type: String, // Should start with MTR_
     required: true
   },
-  members: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
-  }],
-  messages: [{
-    sender: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User"
-    },
-    text: String,
-    createdAt: {
-      type: Date,
-      default: Date.now
+  student_ids: [
+    {
+      type: String
     }
-  }]
+  ],
+  course_id: {
+    type: String
+  }
 }, {
   timestamps: true
 });
 
-module.exports = mongoose.model("Classroom", classroomSchema);
+module.exports = mongoose.model('Classroom', classroomSchema);
