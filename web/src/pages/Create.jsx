@@ -5,6 +5,7 @@ import "./Create.css";
 const Create = () => {
   const [caption, setCaption] = useState("");
   const [media, setMedia] = useState(null);
+  const [mediaFile, setMediaFile] = useState(null);
   const [visibility, setVisibility] = useState("Public");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -13,7 +14,17 @@ const Create = () => {
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
-    if (file) setMedia(URL.createObjectURL(file));
+    if (file) {
+      setMedia(URL.createObjectURL(file));
+      setMediaFile(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setMedia(null);
+    setMediaFile(null);
+    // Reset file input
+    document.getElementById('file-upload').value = '';
   };
 
   const handleSubmit = async (e) => {
@@ -44,6 +55,7 @@ const Create = () => {
 
       setCaption("");
       setMedia(null);
+      setMediaFile(null);
       navigate("/navigation/home");
     } catch (err) {
       console.error(err);
@@ -65,31 +77,47 @@ const Create = () => {
           required
         />
 
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleImageUpload}
-          className="create-file-input"
-        />
+        <div className="file-upload-container">
+          <input
+            type="file"
+            id="file-upload"
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="create-file-input"
+          />
+          <label htmlFor="file-upload" className="file-upload-label">
+            Choose Image
+          </label>
+          {mediaFile && <span className="file-name">{mediaFile.name}</span>}
+        </div>
 
         {media && (
           <div className="image-preview">
             <img src={media} alt="Preview" />
+            <button 
+              type="button" 
+              className="remove-image" 
+              onClick={handleRemoveImage}
+              aria-label="Remove image"
+            >
+              ×
+            </button>
           </div>
         )}
 
         <div className="visibility-select">
           <label>
-            Visibility:
+            <span>🌍 Visibility:</span>
             <select value={visibility} onChange={(e) => setVisibility(e.target.value)}>
               <option value="Public">Public</option>
               <option value="Private">Private</option>
+              <option value="Friends">Friends Only</option>
             </select>
           </label>
         </div>
 
         <button type="submit" className="create-submit-btn" disabled={loading || !caption.trim()}>
-          {loading ? "Posting..." : "Post"}
+          {loading ? "✨Posting..." : "Share Post✨"}
         </button>
       </form>
     </div>

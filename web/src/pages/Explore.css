@@ -3,7 +3,22 @@
   background: #fafafa;
   min-height: 100vh;
 }
-
+.explore-header {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 20px;
+  font-family: Poppins, sans-serif;
+  background: linear-gradient(
+    45deg,
+    #f09433,
+    #e6683c,
+    #dc2743,
+    #cc2366,
+    #bc1888
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
 /* Search */
 .explore-search input {
   width: 100%;

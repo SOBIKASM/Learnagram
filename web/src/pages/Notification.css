@@ -6,17 +6,11 @@
   font-family: 'Arial', sans-serif;
 }
 
-.notification-header {
+.notification-header{
   text-align: center;
   font-size: 2rem;
-  color: linear-gradient(
-    45deg,
-    #f09433,
-    #e6683c,
-    #dc2743,
-    #cc2366,
-    #bc1888
-  );
+  font-family: Poppins, sans-serif;
+  color: linear-gradient(45deg, #262626, #0095f6);
   padding: 1rem;
   
 }

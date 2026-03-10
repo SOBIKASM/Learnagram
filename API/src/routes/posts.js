@@ -40,13 +40,20 @@ router.get('/explore', async (req, res) => {
 // Get user's own posts (Home)
 router.get('/home/:user_id', async (req, res) => {
   try {
-    const posts = await Post.find({ user_id: req.params.user_id }).sort({ created_at: -1 });
-    res.json({ success: true, posts });
+    const User = require('../models/User');
+    const user = await User.findOne({ user_id: req.params.user_id });
+    
+    // Show your posts + posts from people you follow
+    const userIds = [req.params.user_id, ...(user?.following || [])];
+    
+    const posts = await Post.find({ user_id: { $in: userIds } })
+      .sort({ created_at: -1 });
+    
+    res.json(posts);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
-
 // Like/Unlike a post
 router.post('/like', async (req, res) => {
   const { post_id, user_id } = req.body;

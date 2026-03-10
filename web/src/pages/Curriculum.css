@@ -11,9 +11,9 @@
   padding: 10px;
 }
 
-
 /* Header Styling */
 .gradient-text {
+  font-family: Poppins, sans-serif;
   background: var(--ig-grad);
   -webkit-background-clip: text;
   background-clip: text;

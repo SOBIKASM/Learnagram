@@ -39,7 +39,7 @@ export const authAPI = {
 };
 
 export const postsAPI = {
-  getHomePosts: (userId) => api.get(`/posts/home/${userId}`),
+  getHomePosts: (userId) => api.get(`/posts/home/${userId}?t=${Date.now()}`),
   getExplorePosts: () => api.get('/posts/explore'),
   likePost: (postId, userId) => api.post('/posts/like', { post_id: postId, user_id: userId }),
   commentOnPost: (postId, userId, text) => api.post('/posts/comment', { post_id: postId, user_id: userId, text }),

@@ -7,7 +7,12 @@
 }
 
 /* HEADER */
-
+.message-header h2{
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+  font-family: Poppins, sans-serif;
+}
 .message-header {
   display: flex;
   justify-content: space-between;
