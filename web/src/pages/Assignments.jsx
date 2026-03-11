@@ -31,20 +31,65 @@ const Assignments = () => {
     setFiles(prev => ({ ...prev, [id]: file }));
   };
 
-  const handleSubmit = (id) => {
+  const handleSubmit = async (id) => {
     if (!files[id]) { alert("Choose a file first"); return; }
-    setSubmitted(prev => ({ ...prev, [id]: true }));
-    alert("Assignment submitted successfully!");
+    try {
+      const response = await fetch(`http://localhost:7001/api/classrooms/assignment/${id}/submit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          student_id: user.user_id,
+          file_url: 'dummy_url_' + files[id].name, // Simulate upload
+          file_name: files[id].name
+        })
+      });
+      if (response.ok) {
+        setSubmitted(prev => ({ ...prev, [id]: true }));
+        alert("Assignment submitted successfully!");
+        window.location.reload();
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Submission failed");
+    }
   };
 
+  const handleGrade = async (assignment_id, student_id, score, remarks) => {
+    try {
+      const response = await fetch(`http://localhost:7001/api/classrooms/assignment/${assignment_id}/grade`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: user.user_id, // For mentor check
+          student_id,
+          score,
+          remarks
+        })
+      });
+      if (response.ok) {
+        alert("Graded successfully!");
+        window.location.reload();
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Grading failed");
+    }
+  };
   const getDaysLeft = (due_date) => {
     const diff = new Date(due_date) - new Date();
     const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
     return days;
   };
 
-  const pendingAssignments = assignments.filter(a => !submitted[a.assignment_id]);
-  const submittedAssignments = assignments.filter(a => submitted[a.assignment_id]);
+  const pendingAssignments = assignments.filter(a => {
+    const submission = a.submissions?.find(s => s.student_id === user.user_id);
+    return !submission && !submitted[a.assignment_id];
+  });
+  
+  const submittedAssignments = assignments.filter(a => {
+    const submission = a.submissions?.find(s => s.student_id === user.user_id);
+    return submission || submitted[a.assignment_id];
+  });
 
   const displayList = activeTab === "pending" ? pendingAssignments : submittedAssignments;
 
@@ -52,7 +97,6 @@ const Assignments = () => {
 
   return (
     <div className="assignment-container">
-
       {/* Header */}
       <div className="assignment-page-header">
         <div>
@@ -107,6 +151,8 @@ const Assignments = () => {
         displayList.map((item) => {
           const daysLeft = getDaysLeft(item.due_date);
           const isUrgent = daysLeft <= 2;
+          const submission = item.submissions?.find(s => s.student_id === user.user_id);
+          const isSubmitted = submission || submitted[item.assignment_id];
 
           return (
             <div key={item.assignment_id} className="assignment-card">
@@ -114,7 +160,7 @@ const Assignments = () => {
                 <div className="assignment-card-left">
                   <div className="assignment-card-header">
                     <h4 className="assignment-name">{item.title}</h4>
-                    {submitted[item.assignment_id] && (
+                    {isSubmitted && (
                       <span className="submitted-badge">✓ Submitted</span>
                     )}
                   </div>
@@ -139,10 +185,17 @@ const Assignments = () => {
                       month: 'short', day: 'numeric', year: 'numeric'
                     }) : 'No due date'}
                   </p>
+                  
+                  {submission?.status === 'Graded' && (
+                    <div className="grading-result" style={{ marginTop: '10px', padding: '10px', background: '#f0f9ff', borderRadius: '4px', border: '1px solid #bae6fd' }}>
+                      <div style={{ fontWeight: 'bold', color: '#0369a1' }}>Grade: {submission.score} / 100</div>
+                      <div style={{ fontSize: '0.9rem', color: '#0c4a6e' }}>Remarks: {submission.remarks}</div>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {!submitted[item.assignment_id] && (
+              {!isSubmitted && !user?.user_id?.startsWith('MTR_') && (
                 <div className="assignment-actions">
                   <label className="choose-file-btn">
                     {files[item.assignment_id]
@@ -160,6 +213,35 @@ const Assignments = () => {
                   >
                     Submit Assignment
                   </button>
+                </div>
+              )}
+
+              {user?.user_id?.startsWith('MTR_') && (
+                <div className="mentor-submission-view" style={{ marginTop: '20px', borderTop: '1px solid #eee', paddingTop: '15px' }}>
+                  <h5 style={{ marginBottom: '10px' }}>Submissions ({item.submissions?.length || 0})</h5>
+                  {item.submissions?.map(s => (
+                    <div key={s.student_id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px', background: '#f9f9f9', marginBottom: '5px', borderRadius: '4px' }}>
+                      <span>{s.student_id} - <a href="#" onClick={(e) => e.preventDefault()} style={{ color: '#0095f6' }}>{s.file_name}</a></span>
+                      {s.status === 'Graded' ? (
+                        <span style={{ color: '#22c55e', fontWeight: 'bold' }}>{s.score} / 100</span>
+                      ) : (
+                        <div style={{ display: 'flex', gap: '5px' }}>
+                          <input type="number" placeholder="Score" style={{ width: '60px', padding: '2px 5px' }} id={`score-${item.assignment_id}-${s.student_id}`} />
+                          <input type="text" placeholder="Remarks" style={{ width: '100px', padding: '2px 5px' }} id={`remarks-${item.assignment_id}-${s.student_id}`} />
+                          <button 
+                            onClick={() => {
+                              const score = document.getElementById(`score-${item.assignment_id}-${s.student_id}`).value;
+                              const remarks = document.getElementById(`remarks-${item.assignment_id}-${s.student_id}`).value;
+                              handleGrade(item.assignment_id, s.student_id, score, remarks);
+                            }}
+                            style={{ padding: '2px 10px', background: '#0095f6', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                          >
+                            Grade
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
               )}
             </div>

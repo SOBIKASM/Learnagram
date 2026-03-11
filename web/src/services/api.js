@@ -43,6 +43,8 @@ export const postsAPI = {
   getExplorePosts: () => api.get('/posts/explore'),
   likePost: (postId, userId) => api.post('/posts/like', { post_id: postId, user_id: userId }),
   commentOnPost: (postId, userId, text) => api.post('/posts/comment', { post_id: postId, user_id: userId, text }),
+  deletePost: (postId, userId) => api.delete(`/posts/${postId}`, { data: { user_id: userId } }),
+  deleteComment: (postId, commentId, userId) => api.delete(`/posts/comment/${postId}/${commentId}`, { data: { user_id: userId } }),
 };
 
 export const classroomAPI = {

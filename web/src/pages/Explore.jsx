@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./Explore.css";
 import axios from "axios";
 import { postsAPI } from "../services/api";
+import { IoTrashBinOutline } from "react-icons/io5";
 
 const trendingTags = ["Data Structures", "AI", "Web Dev", "DBMS", "Cyber Security", "Java", "Python"];
 
@@ -46,7 +47,27 @@ function Explore() {
       await postsAPI.commentOnPost(post_id, user.user_id, text);
       fetchPosts();
     } catch (err) {
-      console.error('Comment failed:', err);
+      console.error('Answer failed:', err);
+    }
+  };
+
+  const handleDeletePost = async (postId) => {
+    if (!window.confirm("Are you sure you want to delete this post?")) return;
+    try {
+      await postsAPI.deletePost(postId, user.user_id);
+      fetchPosts();
+    } catch (err) {
+      console.error('Delete post failed:', err);
+    }
+  };
+
+  const handleDeleteComment = async (postId, commentId) => {
+    if (!window.confirm("Delete this comment?")) return;
+    try {
+      await postsAPI.deleteComment(postId, commentId, user.user_id);
+      fetchPosts();
+    } catch (err) {
+      console.error('Delete comment failed:', err);
     }
   };
 
@@ -88,81 +109,107 @@ function Explore() {
 
       {/* Posts Feed */}
       {loading ? (
-        <div style={{ color: '#aaa', padding: '2rem', textAlign: 'center' }}>Loading posts...</div>
+        <div style={{ color: '#8e8e8e', padding: '2rem', textAlign: 'center' }}>Loading posts...</div>
       ) : filtered.length === 0 ? (
-        <div style={{ color: '#aaa', padding: '2rem', textAlign: 'center' }}>
+        <div style={{ color: '#8e8e8e', padding: '2rem', textAlign: 'center' }}>
           No posts found.
         </div>
       ) : (
-        <div className="explore-feed">
+        <div className="explore-feed" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
           {filtered.map((post) => (
-            <div className="post-card" key={post.post_id}>
+            <div className="post-card" key={post.post_id} style={{ background: '#fff', borderRadius: '8px', border: '1px solid #dbdbdb', overflow: 'hidden', padding: '12px' }}>
               {/* Post Header */}
-              <div className="post-header">
+              <div className="post-header" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px', position: 'relative' }}>
                 <div style={{
-                  width: '36px', height: '36px', borderRadius: '50%',
-                  background: '#444', display: 'flex', alignItems: 'center',
-                  justifyContent: 'center', color: '#fff', fontWeight: 'bold'
+                  width: '32px', height: '32px', borderRadius: '50%',
+                  background: '#efefef', display: 'flex', alignItems: 'center',
+                  justifyContent: 'center', color: '#262626', fontWeight: 'bold',
+                  fontSize: '0.9rem', border: '1px solid #dbdbdb'
                 }}>
                   {post.user_id?.[0]?.toUpperCase()}
                 </div>
                 <div>
-                  <div className="post-name">{post.user_id}</div>
-                  <div className="post-username" style={{ fontSize: '0.75rem', color: '#aaa' }}>
+                  <div className="post-name" style={{ fontWeight: '600', fontSize: '0.9rem', color: '#262626' }}>{post.user_id}</div>
+                  <div className="post-username" style={{ fontSize: '0.75rem', color: '#8e8e8e' }}>
                     {post.created_at ? new Date(post.created_at).toLocaleDateString() : ''}
                   </div>
                 </div>
+                {(user.user_id === post.user_id || user.user_id?.startsWith('MTR_')) && (
+                  <button
+                    onClick={() => handleDeletePost(post.post_id)}
+                    style={{ background: 'none', border: 'none', color: '#ff4d4d', cursor: 'pointer', position: 'absolute', right: 0 }}
+                  >
+                    <IoTrashBinOutline size={18} />
+                  </button>
+                )}
               </div>
-
-              {/* Caption */}
-              {post.caption && (
-                <div className="post-caption">{post.caption}</div>
-              )}
 
               {/* Image */}
               {post.image_url && (
                 <img src={post.image_url} alt="" className="post-image"
-                  style={{ width: '100%', borderRadius: '8px', marginTop: '8px' }}
+                  style={{ width: '100%', aspectRatio: '1/1', objectFit: 'cover', borderRadius: '4px', marginBottom: '10px' }}
                 />
               )}
 
+              {/* Caption */}
+              {post.caption && (
+                <div className="post-caption" style={{ fontSize: '0.9rem', color: '#262626', marginBottom: '10px' }}>
+                  <strong>{post.user_id}</strong> {post.caption}
+                </div>
+              )}
+
               {/* Footer */}
-              <div className="post-footer">
+              <div className="post-footer" style={{ borderTop: '1px solid #efefef', paddingTop: '10px' }}>
                 <button
                   onClick={() => handleLike(post.post_id)}
                   className="like-btn"
                   style={{
-                    background: 'none', border: 'none', color: '#fff',
-                    cursor: 'pointer', fontSize: '0.9rem', padding: '4px 0'
+                    background: 'none', border: 'none', padding: '0',
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px'
                   }}
                 >
-                  {post.likes?.includes(user.user_id) ? '❤️' : '🤍'} {post.likes?.length || 0} Likes
+                  <span style={{ fontSize: '1.2rem' }}>
+                    {post.likes?.includes(user.user_id) ? '❤️' : '🤍'}
+                  </span>
+                  <span style={{ fontSize: '0.9rem', fontWeight: '600', color: '#262626' }}>
+                    {post.likes?.length || 0} Likes
+                  </span>
                 </button>
 
-                {/* Comments */}
-                {post.comments?.length > 0 && (
-                  <div className="comments-display" style={{ marginTop: '6px' }}>
-                    {post.comments.slice(0, 2).map((c, i) => (
-                      <div key={i} style={{ fontSize: '0.85rem', color: '#ccc' }}>
-                        <strong style={{ color: '#fff' }}>{c.user_id}</strong> {c.text}
+                {/* Answers Display */}
+                {post.comments && post.comments.length > 0 && (
+                  <div className="comments-display" style={{ marginTop: '8px' }}>
+                    {post.comments.slice(0, 5).map((c, i) => (
+                      <div key={i} style={{ fontSize: '0.85rem', color: '#262626', display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                        <span>
+                          <strong style={{ color: '#262626' }}>{c.user_id}</strong> {c.text}
+                        </span>
+                        {(c.user_id === user.user_id || post.user_id === user.user_id || user.user_id?.startsWith('MTR_')) && (
+                          <button
+                            onClick={() => handleDeleteComment(post.post_id, c._id)}
+                            style={{ background: 'none', border: 'none', color: '#8e8e8e', cursor: 'pointer', fontSize: '0.8rem' }}
+                          >
+                            <IoTrashBinOutline />
+                          </button>
+                        )}
                       </div>
                     ))}
-                    {post.comments.length > 2 && (
-                      <div style={{ fontSize: '0.8rem', color: '#888' }}>
-                        View all {post.comments.length} comments
+                    {post.comments.length > 5 && (
+                      <div style={{ fontSize: '0.8rem', color: '#8e8e8e', marginTop: '4px' }}>
+                        View all {post.comments.length} answers
                       </div>
                     )}
                   </div>
                 )}
 
-                {/* Comment Input */}
+                {/* Answer Input */}
                 <input
                   type="text"
-                  placeholder="Add a comment..."
+                  placeholder="Give answer..."
                   style={{
-                    width: '100%', marginTop: '8px', padding: '6px 10px',
-                    background: '#222', border: '1px solid #333', borderRadius: '20px',
-                    color: '#fff', fontSize: '0.85rem', boxSizing: 'border-box'
+                    width: '100%', marginTop: '10px', padding: '8px 0',
+                    background: 'transparent', border: 'none', borderTop: '1px solid #efefef',
+                    color: '#262626', fontSize: '0.85rem'
                   }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {

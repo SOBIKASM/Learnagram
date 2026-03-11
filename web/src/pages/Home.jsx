@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import LearnSnaps from "../components/LearnSnaps";
 import { postsAPI } from '../services/api';
 import axios from "axios";
+import { IoTrashBinOutline } from "react-icons/io5";
 import "./Home.css";
 
 const Home = () => {
@@ -18,7 +19,7 @@ const Home = () => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
     };
-    
+
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -123,6 +124,26 @@ const Home = () => {
     }
   };
 
+  const handleDeletePost = async (postId) => {
+    if (!window.confirm("Are you sure you want to delete this post?")) return;
+    try {
+      await postsAPI.deletePost(postId, user.user_id);
+      fetchPosts();
+    } catch (err) {
+      console.error('Delete post failed:', err);
+    }
+  };
+
+  const handleDeleteComment = async (postId, commentId) => {
+    if (!window.confirm("Delete this comment?")) return;
+    try {
+      await postsAPI.deleteComment(postId, commentId, user.user_id);
+      fetchPosts();
+    } catch (err) {
+      console.error('Delete comment failed:', err);
+    }
+  };
+
   const getFollowLabel = (target_user_id, isPrivate) => {
     const status = followStatus[target_user_id];
     if (status === 'following') return 'Following';
@@ -137,17 +158,17 @@ const Home = () => {
   };
 
   return (
-    <div style={{ 
-      display: 'flex', 
-      gap: isMobile ? '0' : '28px', 
+    <div style={{
+      display: 'flex',
+      gap: isMobile ? '0' : '28px',
       justifyContent: 'center',
-      maxWidth: '1200px', 
-      margin: '0 auto', 
+      maxWidth: '1200px',
+      margin: '0 auto',
       padding: isMobile ? '10px' : '20px'
     }}>
       {/* LEFT — Main Feed */}
-      <div className="home-container" style={{ 
-        flex: 1, 
+      <div className="home-container" style={{
+        flex: 1,
         maxWidth: isMobile ? '100%' : '600px',
         padding: isMobile ? '0' : '0',
         margin: '0 auto'
@@ -162,45 +183,68 @@ const Home = () => {
             posts.map((post) => (
               <div className="post-card" key={post.post_id}>
                 <div className="post-header">
-                  <img 
-                    src={post.profile_pic || `https://ui-avatars.com/api/?name=${post.username}&background=random`} 
-                    alt="" 
-                    className="profile-pic" 
-                  />
-                  <div>
-                    <div className="post-name">{post.username || "User"}</div>
-                    <div className="post-username">@{post.user_id}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <img
+                        src={post.profile_pic || `https://ui-avatars.com/api/?name=${post.username}&background=random`}
+                        alt=""
+                        className="profile-pic"
+                      />
+                      <div>
+                        <div className="post-name">{post.username || "User"}</div>
+                        <div className="post-username">@{post.user_id}</div>
+                      </div>
+                    </div>
+                    {(user.user_id === post.user_id || user.user_id?.startsWith('MTR_')) && (
+                      <button
+                        onClick={() => handleDeletePost(post.post_id)}
+                        className="delete-post-btn"
+                        style={{ background: 'none', border: 'none', color: '#ff4d4d', cursor: 'pointer' }}
+                      >
+                        <IoTrashBinOutline size={20} />
+                      </button>
+                    )}
                   </div>
                 </div>
-                
+
                 {post.image_url && (
                   <img src={post.image_url} alt="" className="post-image" />
                 )}
-                
+
                 <div className="post-caption">
                   <strong>{post.username || "User"}</strong> {post.caption}
                 </div>
-                
+
                 <div className="post-footer">
                   <button onClick={() => handleLike(post.post_id)} className="like-btn">
-                    <svg viewBox="0 0 24 24" width="24" height="24">
-                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill={post.likes?.includes(user.user_id) ? "#ed4956" : "none"} stroke={post.likes?.includes(user.user_id) ? "#ed4956" : "currentColor"}>
+                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                     </svg>
                     {post.likes?.length || 0} likes
                   </button>
-                  
+
                   <div className="comments-display">
                     {post.comments?.map((c, i) => (
-                      <div key={i} className="comment-item">
-                        <strong>{c.user_id}</strong> {c.text}
+                      <div key={i} className="comment-item" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                          <strong>{c.user_id}</strong> {c.text}
+                        </div>
+                        {(c.user_id === user.user_id || post.user_id === user.user_id || user.user_id?.startsWith('MTR_')) && (
+                          <button
+                            onClick={() => handleDeleteComment(post.post_id, c._id)}
+                            style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer', fontSize: '0.8rem' }}
+                          >
+                            <IoTrashBinOutline />
+                          </button>
+                        )}
                       </div>
                     ))}
                   </div>
-                  
+
                   <div className="comment-input-area">
                     <input
                       type="text"
-                      placeholder="Add a comment..."
+                      placeholder="Give answer..."
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           handleComment(post.post_id, e.target.value);

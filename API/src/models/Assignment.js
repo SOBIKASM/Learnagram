@@ -28,6 +28,17 @@ const assignmentSchema = new mongoose.Schema({
     {
       type: String
     }
+  ],
+  submissions: [
+    {
+      student_id: String,
+      file_url: String,
+      file_name: String,
+      submitted_at: { type: Date, default: Date.now },
+      status: { type: String, enum: ['Pending', 'Graded'], default: 'Pending' },
+      score: Number,
+      remarks: String
+    }
   ]
 }, {
   timestamps: true

@@ -76,43 +76,87 @@ function DirectChat() {
     setInput("");
   };
 
-  if (loading) return <div style={{ color: '#fff', padding: '2rem' }}>Loading chat...</div>;
+  if (loading) return <div style={{ color: '#8e8e8e', padding: '2rem', textAlign: 'center' }}>Loading chat...</div>;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '90vh', padding: '1rem' }}>
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      height: '85vh',
+      maxHeight: '85vh',
+      background: '#fff',
+      color: '#262626',
+      margin: '0 auto',
+      maxWidth: '600px',
+      borderRadius: '12px',
+      overflow: 'hidden',
+      border: '1px solid #efefef'
+    }}>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
-        <Link to="/navigation/messages" style={{ color: '#fff' }}>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px',
+        padding: '12px 16px',
+        background: 'rgba(255, 255, 255, 0.8)',
+        backdropFilter: 'blur(10px)',
+        borderBottom: '1px solid #efefef'
+      }}>
+        <Link to="/navigation/messages" style={{ color: '#262626', display: 'flex' }}>
           <IoChevronBack size={24} />
         </Link>
         <div style={{
-          width: '36px', height: '36px', borderRadius: '50%', background: '#444',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff'
+          width: '40px', height: '40px', borderRadius: '50%',
+          background: '#efefef',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#262626',
+          fontWeight: 'bold', fontSize: '1.2rem',
+          border: '1px solid #dbdbdb'
         }}>
           {otherUser?.username?.[0]?.toUpperCase() || '?'}
         </div>
-        <div>
-          <div style={{ color: '#fff', fontWeight: 'bold' }}>{otherUser?.username || other_id}</div>
-          <div style={{ color: '#aaa', fontSize: '0.8rem' }}>@{other_id}</div>
+        <div style={{ flex: 1 }}>
+          <div style={{ color: '#262626', fontWeight: '600', fontSize: '1rem' }}>{otherUser?.username || other_id}</div>
+          <div style={{ color: '#8e8e8e', fontSize: '0.75rem' }}>Active now</div>
         </div>
       </div>
 
       {/* Messages */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '10px', background: '#1a1a1a', borderRadius: '8px' }}>
+      <div style={{
+        flex: 1,
+        overflowY: 'auto',
+        padding: '20px',
+        background: '#fff',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '8px'
+      }}>
         {messages.map((msg, i) => (
           <div key={i} style={{
-            marginBottom: '10px',
             display: 'flex',
-            justifyContent: msg.sender_id === user.user_id ? 'flex-end' : 'flex-start'
+            flexDirection: 'column',
+            alignItems: msg.sender_id === user.user_id ? 'flex-end' : 'flex-start',
+            marginBottom: '4px'
           }}>
             <div style={{
-              padding: '8px 12px', borderRadius: '16px', maxWidth: '70%',
-              background: msg.sender_id === user.user_id ? '#3b82f6' : '#333',
-              color: '#fff'
+              padding: '10px 16px',
+              borderRadius: '20px',
+              maxWidth: '75%',
+              background: msg.sender_id === user.user_id ? '#0095f6' : '#efefef',
+              color: msg.sender_id === user.user_id ? '#fff' : '#262626',
+              fontSize: '14px',
+              lineHeight: '1.4',
+              borderBottomRightRadius: msg.sender_id === user.user_id ? '4px' : '20px',
+              borderBottomLeftRadius: msg.sender_id === user.user_id ? '20px' : '4px'
             }}>
               {msg.content}
-              <div style={{ fontSize: '0.65rem', color: '#ccc', marginTop: '2px', textAlign: 'right' }}>
-                {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              <div style={{
+                fontSize: '9px',
+                opacity: 0.6,
+                marginTop: '4px',
+                textAlign: msg.sender_id === user.user_id ? 'right' : 'left',
+                fontWeight: '400'
+              }}>
+                {new Date(msg.createdAt || new Date()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </div>
             </div>
           </div>
@@ -121,18 +165,42 @@ function DirectChat() {
       </div>
 
       {/* Input */}
-      <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+      <div style={{
+        padding: '16px',
+        background: '#fff',
+        borderTop: '1px solid #efefef',
+        display: 'flex',
+        gap: '12px',
+        alignItems: 'center'
+      }}>
         <input
           type="text"
           placeholder="Message..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-          style={{ flex: 1, padding: '10px', background: '#333', border: 'none', borderRadius: '20px', color: '#fff' }}
+          style={{
+            flex: 1,
+            padding: '12px 18px',
+            background: '#fafafa',
+            border: '1px solid #efefef',
+            borderRadius: '24px',
+            color: '#262626',
+            outline: 'none',
+            fontSize: '14px'
+          }}
         />
         <button
           onClick={sendMessage}
-          style={{ padding: '10px 20px', background: '#3b82f6', border: 'none', borderRadius: '20px', color: '#fff', cursor: 'pointer' }}
+          disabled={!input.trim()}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: input.trim() ? '#0095f6' : '#b2dffc',
+            cursor: input.trim() ? 'pointer' : 'default',
+            fontWeight: '600',
+            fontSize: '0.9rem'
+          }}
         >
           Send
         </button>

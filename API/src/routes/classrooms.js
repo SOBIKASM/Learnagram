@@ -23,6 +23,17 @@ router.get('/', async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 });
+
+// Get a single classroom by ID
+router.get('/:classroom_id', async (req, res) => {
+  try {
+    const classroom = await Classroom.findOne({ classroom_id: req.params.classroom_id });
+    if (!classroom) return res.status(404).json({ message: 'Classroom not found' });
+    res.json(classroom);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 // Create a classroom (Mentor only)
 router.post('/create', isMentor, async (req, res) => {
   const { classroom_id, name, mentor_id, student_ids } = req.body;
@@ -76,14 +87,18 @@ router.get('/:classroom_id/messages', async (req, res) => {
   }
 });
 
-// Send a message
+// Send a message (Update to handle files)
 router.post('/:classroom_id/messages', async (req, res) => {
-  const { sender_id, content } = req.body;
+  const { sender_id, content, type, file_url, file_name, file_type } = req.body;
   try {
     const message = new Message({
       classroom_id: req.params.classroom_id,
       sender_id,
-      content
+      content,
+      type: type || 'text',
+      file_url,
+      file_name,
+      file_type
     });
     await message.save();
     res.json(message);
@@ -92,8 +107,65 @@ router.post('/:classroom_id/messages', async (req, res) => {
   }
 });
 
+// Submit an assignment
+router.post('/assignment/:assignment_id/submit', async (req, res) => {
+  const { student_id, file_url, file_name } = req.body;
+  try {
+    const assignment = await Assignment.findOne({ assignment_id: req.params.assignment_id });
+    if (!assignment) return res.status(404).json({ message: 'Assignment not found' });
+
+    // Remove old submission if exists
+    assignment.submissions = assignment.submissions.filter(s => s.student_id !== student_id);
+
+    assignment.submissions.push({
+      student_id,
+      file_url,
+      file_name,
+      submitted_at: new Date(),
+      status: 'Pending'
+    });
+
+    await assignment.save();
+    res.json({ success: true, assignment });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Grade an assignment (Mentor only)
+router.post('/assignment/:assignment_id/grade', isMentor, async (req, res) => {
+  const { student_id, score, remarks, user_id } = req.body; // user_id for isMentor middleware
+  try {
+    const assignment = await Assignment.findOne({ assignment_id: req.params.assignment_id });
+    if (!assignment) return res.status(404).json({ message: 'Assignment not found' });
+
+    const submission = assignment.submissions.find(s => s.student_id === student_id);
+    if (!submission) return res.status(404).json({ message: 'Submission not found' });
+
+    submission.score = score;
+    submission.remarks = remarks;
+    submission.status = 'Graded';
+
+    await assignment.save();
+
+    // Notify student
+    const notification = new Notification({
+      user_id: student_id,
+      type: 'assignment_graded',
+      content: `Your assignment "${assignment.title}" has been graded. Score: ${score}`,
+      reference_id: req.params.assignment_id
+    });
+    await notification.save();
+
+    res.json({ success: true, assignment });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // Get classrooms for a user
 router.get('/my-classrooms/:user_id', async (req, res) => {
+// ... existing code ...
   const { user_id } = req.params;
   try {
     const classrooms = await Classroom.find({
