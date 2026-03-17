@@ -9,6 +9,7 @@ const Assignments = () => {
   const [submitted, setSubmitted] = useState({});
   const [activeTab, setActiveTab] = useState("pending");
   const user = JSON.parse(localStorage.getItem('user'));
+  // Note: MTR102 is a verified mentor ID in the database.
 
   useEffect(() => {
     const fetchAssignments = async () => {
@@ -103,7 +104,7 @@ const Assignments = () => {
           <h2 className="assignment-title">Assignments</h2>
           <p className="assignment-subtitle">Manage your coursework and deadlines</p>
         </div>
-        {user?.user_id?.startsWith('MTR_') && (
+        {user?.user_id?.startsWith('MTR') && (
           <Link to="/navigation/assignments/create" className="create-assignment-btn">
             + Create Assignment
           </Link>
@@ -195,7 +196,7 @@ const Assignments = () => {
                 </div>
               </div>
 
-              {!isSubmitted && !user?.user_id?.startsWith('MTR_') && (
+              {!isSubmitted && !user?.user_id?.startsWith('MTR') && (
                 <div className="assignment-actions">
                   <label className="choose-file-btn">
                     {files[item.assignment_id]
@@ -216,27 +217,47 @@ const Assignments = () => {
                 </div>
               )}
 
-              {user?.user_id?.startsWith('MTR_') && (
+              {user?.user_id?.startsWith('MTR') && (
                 <div className="mentor-submission-view" style={{ marginTop: '20px', borderTop: '1px solid #eee', paddingTop: '15px' }}>
                   <h5 style={{ marginBottom: '10px' }}>Submissions ({item.submissions?.length || 0})</h5>
                   {item.submissions?.map(s => (
-                    <div key={s.student_id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px', background: '#f9f9f9', marginBottom: '5px', borderRadius: '4px' }}>
-                      <span>{s.student_id} - <a href="#" onClick={(e) => e.preventDefault()} style={{ color: '#0095f6' }}>{s.file_name}</a></span>
+                    <div key={s.student_id} style={{ display: 'flex', flexDirection: 'column', padding: '12px', background: '#f9f9f9', marginBottom: '10px', borderRadius: '6px', border: '1px solid #efefef' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                        <span style={{ fontWeight: '600' }}>Student: {s.student_id}</span>
+                        <a href={s.file_url} target="_blank" rel="noreferrer" style={{ color: '#0095f6', fontSize: '0.85rem', textDecoration: 'none' }}>
+                          View Submission: {s.file_name}
+                        </a>
+                      </div>
+                      
                       {s.status === 'Graded' ? (
-                        <span style={{ color: '#22c55e', fontWeight: 'bold' }}>{s.score} / 100</span>
+                        <div style={{ display: 'flex', gap: '15px', alignItems: 'center', background: '#ecfdf5', padding: '8px', borderRadius: '4px' }}>
+                          <span style={{ color: '#059669', fontWeight: 'bold' }}>Grade: {s.score} / {item.points || 100}</span>
+                          <span style={{ fontSize: '0.85rem', color: '#065f46' }}>Remarks: {s.remarks}</span>
+                        </div>
                       ) : (
-                        <div style={{ display: 'flex', gap: '5px' }}>
-                          <input type="number" placeholder="Score" style={{ width: '60px', padding: '2px 5px' }} id={`score-${item.assignment_id}-${s.student_id}`} />
-                          <input type="text" placeholder="Remarks" style={{ width: '100px', padding: '2px 5px' }} id={`remarks-${item.assignment_id}-${s.student_id}`} />
+                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                          <input 
+                            type="number" 
+                            placeholder="Score" 
+                            style={{ width: '70px', padding: '5px', borderRadius: '4px', border: '1px solid #dbdbdb' }} 
+                            id={`score-${item.assignment_id}-${s.student_id}`} 
+                          />
+                          <input 
+                            type="text" 
+                            placeholder="Remarks" 
+                            style={{ flex: 1, padding: '5px', borderRadius: '4px', border: '1px solid #dbdbdb' }} 
+                            id={`remarks-${item.assignment_id}-${s.student_id}`} 
+                          />
                           <button 
                             onClick={() => {
                               const score = document.getElementById(`score-${item.assignment_id}-${s.student_id}`).value;
                               const remarks = document.getElementById(`remarks-${item.assignment_id}-${s.student_id}`).value;
                               handleGrade(item.assignment_id, s.student_id, score, remarks);
                             }}
-                            style={{ padding: '2px 10px', background: '#0095f6', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                            className="grade-btn-submit"
+                            style={{ padding: '5px 15px', background: '#0095f6', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
                           >
-                            Grade
+                            Verify & Grade
                           </button>
                         </div>
                       )}

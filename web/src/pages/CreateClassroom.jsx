@@ -11,7 +11,7 @@ const CreateClassroom = () => {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user'));
 
-  if (!user?.user_id?.startsWith('MTR_')) {
+  if (!user?.user_id?.startsWith('MTR')) {
     return <div className="error">Access Denied: Only mentors can create classrooms.</div>;
   }
 

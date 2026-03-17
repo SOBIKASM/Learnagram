@@ -107,8 +107,12 @@ const Home = () => {
 
   const handleLike = async (postId) => {
     try {
-      await postsAPI.likePost(postId, user.user_id);
-      fetchPosts();
+      const response = await postsAPI.likePost(postId, user.user_id);
+      if (response.data && response.data.post) {
+        setPosts(prev => prev.map(p => p.post_id === postId ? { ...p, ...response.data.post } : p));
+      } else {
+        fetchPosts();
+      }
     } catch (err) {
       console.error('Like failed:', err);
     }
@@ -117,10 +121,28 @@ const Home = () => {
   const handleComment = async (postId, text) => {
     if (!text) return;
     try {
-      await postsAPI.commentOnPost(postId, user.user_id, text);
-      fetchPosts();
+      const response = await postsAPI.commentOnPost(postId, user.user_id, text);
+      if (response.data && response.data.post) {
+        setPosts(prev => prev.map(p => p.post_id === postId ? { ...p, ...response.data.post } : p));
+      } else {
+        fetchPosts();
+      }
     } catch (err) {
       console.error('Comment failed:', err);
+    }
+  };
+
+  const handleDeleteComment = async (postId, commentId) => {
+    if (!window.confirm("Delete this answer?")) return;
+    try {
+      const response = await postsAPI.deleteComment(postId, commentId, user.user_id);
+      if (response.data && response.data.post) {
+        setPosts(prev => prev.map(p => p.post_id === postId ? { ...p, ...response.data.post } : p));
+      } else {
+        fetchPosts();
+      }
+    } catch (err) {
+      console.error('Delete Answer failed:', err);
     }
   };
 
@@ -131,16 +153,6 @@ const Home = () => {
       fetchPosts();
     } catch (err) {
       console.error('Delete post failed:', err);
-    }
-  };
-
-  const handleDeleteComment = async (postId, commentId) => {
-    if (!window.confirm("Delete this comment?")) return;
-    try {
-      await postsAPI.deleteComment(postId, commentId, user.user_id);
-      fetchPosts();
-    } catch (err) {
-      console.error('Delete comment failed:', err);
     }
   };
 
@@ -195,7 +207,7 @@ const Home = () => {
                         <div className="post-username">@{post.user_id}</div>
                       </div>
                     </div>
-                    {(user.user_id === post.user_id || user.user_id?.startsWith('MTR_')) && (
+                    {(user.user_id === post.user_id || user.user_id?.startsWith('MTR')) && (
                       <button
                         onClick={() => handleDeletePost(post.post_id)}
                         className="delete-post-btn"
@@ -223,18 +235,19 @@ const Home = () => {
                     {post.likes?.length || 0} likes
                   </button>
 
-                  <div className="comments-display">
+                   <div className="comments-display">
                     {post.comments?.map((c, i) => (
-                      <div key={i} className="comment-item" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div>
-                          <strong>{c.user_id}</strong> {c.text}
+                      <div key={i} className="comment-item" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                        <div style={{ fontSize: '0.9rem' }}>
+                          <strong>{c.username || c.user_id}</strong> {c.text}
                         </div>
-                        {(c.user_id === user.user_id || post.user_id === user.user_id || user.user_id?.startsWith('MTR_')) && (
+                        {(c.user_id === user.user_id || post.user_id === user.user_id || user.user_id?.startsWith('MTR')) && (
                           <button
                             onClick={() => handleDeleteComment(post.post_id, c._id)}
-                            style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer', fontSize: '0.8rem' }}
+                            style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer', fontSize: '1.2rem', padding: '0 5px' }}
+                            title="Delete Answer"
                           >
-                            <IoTrashBinOutline />
+                            ×
                           </button>
                         )}
                       </div>

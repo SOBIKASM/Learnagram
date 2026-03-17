@@ -34,7 +34,7 @@ const Classroom = () => {
           classroomAPI.getClassroom(classId),
           classroomAPI.getMessages(classId)
         ]);
-        setClassroomInfo(infoRes.data);
+        setClassroomInfo(infoRes.data || infoRes);
         // Correctly handle the message array from the response
         const messagesData = Array.isArray(messagesRes.data) ? messagesRes.data : messagesRes.data.messages || [];
         setMessages(messagesData);

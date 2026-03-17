@@ -62,7 +62,7 @@ router.get('/:user_id/:other_id', async (req, res) => {
 // Send a DM
 router.post('/send', async (req, res) => {
   try {
-    const { sender_id, receiver_id, content } = req.body;
+    const { sender_id, receiver_id, content, type, file_url, file_name, file_type } = req.body;
 
     // Check they follow each other
     const sender = await User.findOne({ user_id: sender_id });
@@ -70,7 +70,15 @@ router.post('/send', async (req, res) => {
       return res.status(403).json({ success: false, message: 'You can only DM mutual followers' });
     }
 
-    const message = new DirectMessage({ sender_id, receiver_id, content });
+    const message = new DirectMessage({ 
+      sender_id, 
+      receiver_id, 
+      content, 
+      type: type || 'text',
+      file_url,
+      file_name,
+      file_type
+    });
     await message.save();
 
     res.json({ success: true, message });

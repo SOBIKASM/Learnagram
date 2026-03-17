@@ -34,8 +34,12 @@ function Explore() {
 
   const handleLike = async (post_id) => {
     try {
-      await postsAPI.likePost(post_id, user.user_id);
-      fetchPosts();
+      const response = await postsAPI.likePost(post_id, user.user_id);
+      if (response.data && response.data.post) {
+        setPosts(prev => prev.map(p => p.post_id === post_id ? { ...p, ...response.data.post } : p));
+      } else {
+        fetchPosts();
+      }
     } catch (err) {
       console.error('Like failed:', err);
     }
@@ -44,10 +48,28 @@ function Explore() {
   const handleComment = async (post_id, text) => {
     if (!text.trim()) return;
     try {
-      await postsAPI.commentOnPost(post_id, user.user_id, text);
-      fetchPosts();
+      const response = await postsAPI.commentOnPost(post_id, user.user_id, text);
+      if (response.data && response.data.post) {
+        setPosts(prev => prev.map(p => p.post_id === post_id ? { ...p, ...response.data.post } : p));
+      } else {
+        fetchPosts();
+      }
     } catch (err) {
       console.error('Answer failed:', err);
+    }
+  };
+
+  const handleDeleteComment = async (postId, commentId) => {
+    if (!window.confirm("Delete this answer?")) return;
+    try {
+      const response = await postsAPI.deleteComment(postId, commentId, user.user_id);
+      if (response.data && response.data.post) {
+        setPosts(prev => prev.map(p => p.post_id === postId ? { ...p, ...response.data.post } : p));
+      } else {
+        fetchPosts();
+      }
+    } catch (err) {
+      console.error('Delete Answer failed:', err);
     }
   };
 
@@ -58,16 +80,6 @@ function Explore() {
       fetchPosts();
     } catch (err) {
       console.error('Delete post failed:', err);
-    }
-  };
-
-  const handleDeleteComment = async (postId, commentId) => {
-    if (!window.confirm("Delete this comment?")) return;
-    try {
-      await postsAPI.deleteComment(postId, commentId, user.user_id);
-      fetchPosts();
-    } catch (err) {
-      console.error('Delete comment failed:', err);
     }
   };
 
@@ -115,7 +127,7 @@ function Explore() {
           No posts found.
         </div>
       ) : (
-        <div className="explore-feed" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+        <div className="explore-feed">
           {filtered.map((post) => (
             <div className="post-card" key={post.post_id} style={{ background: '#fff', borderRadius: '8px', border: '1px solid #dbdbdb', overflow: 'hidden', padding: '12px' }}>
               {/* Post Header */}
@@ -134,7 +146,7 @@ function Explore() {
                     {post.created_at ? new Date(post.created_at).toLocaleDateString() : ''}
                   </div>
                 </div>
-                {(user.user_id === post.user_id || user.user_id?.startsWith('MTR_')) && (
+                {(user.user_id === post.user_id || user.user_id?.startsWith('MTR')) && (
                   <button
                     onClick={() => handleDeletePost(post.post_id)}
                     style={{ background: 'none', border: 'none', color: '#ff4d4d', cursor: 'pointer', position: 'absolute', right: 0 }}
@@ -176,29 +188,25 @@ function Explore() {
                   </span>
                 </button>
 
-                {/* Answers Display */}
+                 {/* Answers Display */}
                 {post.comments && post.comments.length > 0 && (
                   <div className="comments-display" style={{ marginTop: '8px' }}>
-                    {post.comments.slice(0, 5).map((c, i) => (
+                    {post.comments.map((c, i) => (
                       <div key={i} style={{ fontSize: '0.85rem', color: '#262626', display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
                         <span>
-                          <strong style={{ color: '#262626' }}>{c.user_id}</strong> {c.text}
+                          <strong style={{ color: '#262626' }}>{c.username || c.user_id}</strong> {c.text}
                         </span>
-                        {(c.user_id === user.user_id || post.user_id === user.user_id || user.user_id?.startsWith('MTR_')) && (
+                        {(c.user_id === user.user_id || post.user_id === user.user_id || user.user_id?.startsWith('MTR')) && (
                           <button
                             onClick={() => handleDeleteComment(post.post_id, c._id)}
-                            style={{ background: 'none', border: 'none', color: '#8e8e8e', cursor: 'pointer', fontSize: '0.8rem' }}
+                            style={{ background: 'none', border: 'none', color: '#8e8e8e', cursor: 'pointer', fontSize: '1.1rem', padding: '0 5px' }}
+                            title="Delete Answer"
                           >
-                            <IoTrashBinOutline />
+                            ×
                           </button>
                         )}
                       </div>
                     ))}
-                    {post.comments.length > 5 && (
-                      <div style={{ fontSize: '0.8rem', color: '#8e8e8e', marginTop: '4px' }}>
-                        View all {post.comments.length} answers
-                      </div>
-                    )}
                   </div>
                 )}
 

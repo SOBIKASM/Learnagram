@@ -17,6 +17,7 @@
     #bc1888
   );
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 /* Search */
@@ -47,11 +48,13 @@
   white-space: nowrap;
 }
 
-/* Grid */
-.explore-grid {
+/* Feed */
+.explore-feed {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-  gap: 15px;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 /* Card */

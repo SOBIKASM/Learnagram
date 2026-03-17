@@ -39,7 +39,11 @@ const assignmentSchema = new mongoose.Schema({
       score: Number,
       remarks: String
     }
-  ]
+  ],
+  points: {
+    type: Number,
+    default: 100
+  }
 }, {
   timestamps: true
 });

@@ -78,17 +78,28 @@ function Profile() {
 
       <div className="post-grid">
         {userData.posts?.length > 0 ? (
-          userData.posts.map((postId, i) => (
-            <div key={i} className="grid-item">
-              <div className="overlay"></div>
+          userData.posts.map((post, i) => (
+            <div key={i} className="grid-item" style={{ 
+              backgroundImage: post.image_url ? `url(${post.image_url})` : 'none',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: '#efefef'
+            }}>
+              {!post.image_url && <span style={{ fontSize: '0.8rem', color: '#8e8e8e', textAlign: 'center', padding: '10px' }}>{post.caption?.substring(0, 30)}...</span>}
+              <div className="overlay">
+                <div style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 'bold' }}>
+                  ❤️ {post.likes?.length || 0} 💬 {post.comments?.length || 0}
+                </div>
+              </div>
             </div>
           ))
         ) : (
-          [...Array(12)].map((_, i) => (
-            <div key={i} className="grid-item">
-              <div className="overlay"></div>
-            </div>
-          ))
+          <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: '#8e8e8e' }}>
+            No posts yet.
+          </div>
         )}
       </div>
     </div>

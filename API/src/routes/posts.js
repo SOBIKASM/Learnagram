@@ -81,9 +81,26 @@ router.post('/comment', async (req, res) => {
     const post = await Post.findOne({ post_id });
     if (!post) return res.status(404).json({ message: 'Post not found' });
 
-    post.comments.push({ user_id, text });
-    await post.save();
-    res.json({ success: true, post });
+    const user = await User.findOne({ user_id });
+    const username = user ? user.username : user_id;
+    const cid = 'COM' + Date.now();
+
+    const newComment = { 
+      comment_id: cid, 
+      user_id: user_id, 
+      username: username, 
+      text: text 
+    };
+
+    const updatedPost = await Post.findOneAndUpdate(
+      { post_id },
+      { $push: { comments: newComment } },
+      { new: true }
+    );
+
+    if (!updatedPost) return res.status(404).json({ message: 'Post not found after update' });
+    
+    res.json({ success: true, post: updatedPost });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

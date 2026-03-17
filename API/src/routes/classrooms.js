@@ -8,16 +8,20 @@ const Notification = require('../models/Notification');
 // Middleware to check if user is a mentor
 const isMentor = (req, res, next) => {
   const { user_id } = req.body;
-  if (user_id && user_id.startsWith('MTR_')) {
+  if (user_id && user_id.startsWith('MTR')) {
     next();
   } else {
     res.status(403).json({ message: 'Only mentors can perform this action' });
   }
 };
-// Get ALL classrooms (or filter by user)
+// Get ALL classrooms (or filter by user/dept/sem)
 router.get('/', async (req, res) => {
+  const { department, semester } = req.query;
   try {
-    const classrooms = await Classroom.find();
+    const filter = {};
+    if (department) filter.name = new RegExp(department, 'i'); // Simple check against name for now
+    // Actually, we should filter by course_id/semester if we have a proper mapping
+    const classrooms = await Classroom.find(filter);
     res.json({ success: true, classrooms });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -48,9 +52,9 @@ router.post('/create', isMentor, async (req, res) => {
 
 // Create an assignment (Mentor only)
 router.post('/assignment', isMentor, async (req, res) => {
-  const { assignment_id, classroom_id, mentor_id, title, description, due_date, enrolled_students } = req.body;
+  const { assignment_id, classroom_id, mentor_id, title, description, due_date, enrolled_students, points } = req.body;
   try {
-    const assignment = new Assignment({ assignment_id, classroom_id, mentor_id, title, description, due_date, enrolled_students });
+    const assignment = new Assignment({ assignment_id, classroom_id, mentor_id, title, description, due_date, enrolled_students, points });
     await assignment.save();
 
     // Create notifications for enrolled students

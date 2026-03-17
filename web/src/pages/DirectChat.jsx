@@ -53,13 +53,17 @@ function DirectChat() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const sendMessage = async () => {
-    if (!input.trim()) return;
+  const sendMessage = async (type = 'text', fileData = null) => {
+    if (type === 'text' && !input.trim()) return;
 
     const messageData = {
       sender_id: user.user_id,
       receiver_id: other_id,
-      content: input
+      content: fileData ? `Sent a file: ${fileData.name}` : input,
+      type,
+      file_url: fileData?.url,
+      file_name: fileData?.name,
+      file_type: fileData?.type
     };
 
     // Emit via socket for real-time
@@ -73,7 +77,7 @@ function DirectChat() {
       console.error('Failed to save message:', err);
     }
 
-    setInput("");
+    if (type === 'text') setInput("");
   };
 
   if (loading) return <div style={{ color: '#8e8e8e', padding: '2rem', textAlign: 'center' }}>Loading chat...</div>;
@@ -84,13 +88,13 @@ function DirectChat() {
       flexDirection: 'column',
       height: '85vh',
       maxHeight: '85vh',
-      background: '#fff',
+      background: '#f0f2f5', // Improved background for visibility
       color: '#262626',
       margin: '0 auto',
       maxWidth: '600px',
       borderRadius: '12px',
       overflow: 'hidden',
-      border: '1px solid #efefef'
+      border: '1px solid #dbdbdb'
     }}>
       {/* Header */}
       <div style={{
@@ -98,9 +102,8 @@ function DirectChat() {
         alignItems: 'center',
         gap: '12px',
         padding: '12px 16px',
-        background: 'rgba(255, 255, 255, 0.8)',
-        backdropFilter: 'blur(10px)',
-        borderBottom: '1px solid #efefef'
+        background: '#fff',
+        borderBottom: '1px solid #dbdbdb'
       }}>
         <Link to="/navigation/messages" style={{ color: '#262626', display: 'flex' }}>
           <IoChevronBack size={24} />
@@ -125,7 +128,6 @@ function DirectChat() {
         flex: 1,
         overflowY: 'auto',
         padding: '20px',
-        background: '#fff',
         display: 'flex',
         flexDirection: 'column',
         gap: '8px'
@@ -141,14 +143,22 @@ function DirectChat() {
               padding: '10px 16px',
               borderRadius: '20px',
               maxWidth: '75%',
-              background: msg.sender_id === user.user_id ? '#0095f6' : '#efefef',
+              background: msg.sender_id === user.user_id ? '#0095f6' : '#fff',
               color: msg.sender_id === user.user_id ? '#fff' : '#262626',
               fontSize: '14px',
               lineHeight: '1.4',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
               borderBottomRightRadius: msg.sender_id === user.user_id ? '4px' : '20px',
               borderBottomLeftRadius: msg.sender_id === user.user_id ? '20px' : '4px'
             }}>
-              {msg.content}
+              {msg.type === 'file' ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span role="img" aria-label="file">📎</span>
+                  <a href="#" onClick={(e) => e.preventDefault()} style={{ color: 'inherit', textDecoration: 'underline' }}>
+                    {msg.file_name}
+                  </a>
+                </div>
+              ) : msg.content}
               <div style={{
                 fontSize: '9px',
                 opacity: 0.6,
@@ -168,11 +178,22 @@ function DirectChat() {
       <div style={{
         padding: '16px',
         background: '#fff',
-        borderTop: '1px solid #efefef',
+        borderTop: '1px solid #dbdbdb',
         display: 'flex',
         gap: '12px',
         alignItems: 'center'
       }}>
+        <label style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+          <span style={{ fontSize: '1.4rem' }}>📎</span>
+          <input 
+            type="file" 
+            style={{ display: 'none' }} 
+            onChange={(e) => {
+              const file = e.target.files[0];
+              if (file) sendMessage('file', { name: file.name, url: 'dummy_url_' + file.name, type: file.type });
+            }}
+          />
+        </label>
         <input
           type="text"
           placeholder="Message..."
@@ -183,7 +204,7 @@ function DirectChat() {
             flex: 1,
             padding: '12px 18px',
             background: '#fafafa',
-            border: '1px solid #efefef',
+            border: '1px solid #dbdbdb',
             borderRadius: '24px',
             color: '#262626',
             outline: 'none',
@@ -191,7 +212,7 @@ function DirectChat() {
           }}
         />
         <button
-          onClick={sendMessage}
+          onClick={() => sendMessage()}
           disabled={!input.trim()}
           style={{
             background: 'none',

@@ -9,7 +9,9 @@ const postSchema = new mongoose.Schema({
   created_at: { type: Date, default: Date.now },
   likes: [{ type: String }],
   comments: [{
+    comment_id: { type: String, required: true },
     user_id: { type: String, required: true },
+    username: { type: String },
     text: { type: String, required: true },
     created_at: { type: Date, default: Date.now }
   }]

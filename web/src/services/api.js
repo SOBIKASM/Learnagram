@@ -48,12 +48,16 @@ export const postsAPI = {
 };
 
 export const classroomAPI = {
-  getClassrooms: () => api.get('/classrooms'),
+  getClassrooms: (filter = {}) => {
+    const params = new URLSearchParams(filter).toString();
+    return api.get(`/classrooms?${params}`);
+  },
+  getClassroom: (classId) => api.get(`/classrooms/${classId}`),
   createClassroom: (data) => api.post('/classrooms/create', data),
   getMessages: (classId) => api.get(`/classrooms/${classId}/messages`),
   sendMessage: (classId, data) => api.post(`/classrooms/${classId}/messages`, data),
+  joinClassroom: (classId, userId) => api.post(`/classrooms/${classId}/join`, { user_id: userId }),
   createAssignment: (data) => api.post('/classrooms/assignment', data),
 };
-
 
 export default api;

@@ -13,12 +13,17 @@ const ClassroomList = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    fetchClassrooms();
-  }, []);
-  const fetchClassrooms = async () => {
+    const params = new URLSearchParams(window.location.search);
+    const dept = params.get('dept');
+    const sem = params.get('sem');
+    fetchClassrooms({ department: dept, semester: sem });
+  }, [window.location.search]);
+
+  const fetchClassrooms = async (filter = {}) => {
     try {
       setLoading(true);
-      const response = await classroomAPI.getClassrooms();
+      const cleanFilter = Object.fromEntries(Object.entries(filter).filter(([_, v]) => v != null));
+      const response = await classroomAPI.getClassrooms(cleanFilter);
       setClassrooms(response.data.classrooms || []);
       setError(null);
     } catch (err) {
@@ -58,7 +63,7 @@ const ClassroomList = () => {
     <div className="classroom-list-container">
       <div className="classroom-header">
         <h2 className="gradient-text">Your Classrooms</h2>
-        {user?.user_id?.startsWith('MTR_') && (
+        {user?.user_id?.startsWith('MTR') && (
           <Link to="/navigation/classroom/create" className="create-btn" style={{ textDecoration: 'none' }}>
             + Create Classroom
           </Link>

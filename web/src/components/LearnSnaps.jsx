@@ -3,11 +3,12 @@ import "./LearnSnaps.css";
 
 function LearnSnaps() {
   const snaps = [
-    { title: "AAAA", type: "primary" },
-    { title: "BBBB", type: "secondary" },
-    { title: "CCCC", type: "accent" },
-    { title: "DDDD", type: "primary" },
-    { title: "EEEE", type: "secondary" },
+    { title: "Placement", type: "primary", icon: "🎓" },
+    { title: "Exam Prep", type: "secondary", icon: "📝" },
+    { title: "Trends", type: "accent", icon: "🚀" },
+    { title: "Events", type: "primary", icon: "📅" },
+    { title: "Resources", type: "secondary", icon: "📚" },
+    { title: "Library", type: "accent", icon: "🏢" },
   ];
 
   return (
@@ -18,7 +19,7 @@ function LearnSnaps() {
           <div className="snap-item" key={index}>
             <div className={`snap-ring ${snap.type}`}>
               <div className="snap-inner">
-                {snap.title.charAt(0)}
+                {snap.icon}
               </div>
             </div>
             <span>{snap.title}</span>
