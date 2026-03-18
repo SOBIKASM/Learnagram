@@ -7,19 +7,16 @@ require("dotenv").config();
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: ["http://localhost:5173", "http://localhost:3000"],
-    methods: ["GET", "POST"],
-    credentials: true
-  }
-});
+const corsOptions = {
+  origin: true, // Allow any origin
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  credentials: true
+};
+
+const io = new Server(server, { cors: corsOptions });
 
 app.use(express.json());
-app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000'],
-  credentials: true
-}));
+app.use(cors(corsOptions));
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`, req.body);
   next();

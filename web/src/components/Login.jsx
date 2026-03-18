@@ -38,7 +38,7 @@ function Login() {
   const fillStudentCredentials = () => {
     setFormData({
       user_id: '22CSE001',  
-      password: 'pass123'    
+      password: 'password123'    
     });
   };
 

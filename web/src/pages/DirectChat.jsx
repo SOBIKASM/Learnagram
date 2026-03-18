@@ -20,7 +20,8 @@ function DirectChat() {
 
   useEffect(() => {
     // Connect socket
-    socketRef.current = io("http://localhost:7001");
+    const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:7001";
+    socketRef.current = io(SOCKET_URL);
     socketRef.current.emit("join_dm", roomKey);
 
     socketRef.current.on("receive_dm", (data) => {
@@ -30,10 +31,11 @@ function DirectChat() {
     // Fetch history + other user info
     const init = async () => {
       try {
+        const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:7001/api';
         const [historyRes, userRes] = await Promise.all([
-          axios.get(`http://localhost:7001/api/dm/${user.user_id}/${other_id}`,
+          axios.get(`${API_URL}/dm/${user.user_id}/${other_id}`,
             { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get(`http://localhost:7001/api/users/${other_id}`,
+          axios.get(`${API_URL}/users/${other_id}`,
             { headers: { Authorization: `Bearer ${token}` } })
         ]);
         setMessages(historyRes.data.messages || []);
@@ -71,7 +73,8 @@ function DirectChat() {
 
     // Save to DB
     try {
-      await axios.post('http://localhost:7001/api/dm/send', messageData,
+      const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:7001/api';
+      await axios.post(`${API_URL}/dm/send`, messageData,
         { headers: { Authorization: `Bearer ${token}` } });
     } catch (err) {
       console.error('Failed to save message:', err);

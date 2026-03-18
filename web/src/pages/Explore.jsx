@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./Explore.css";
 import axios from "axios";
 import { postsAPI } from "../services/api";
-import { IoTrashBinOutline } from "react-icons/io5";
+import { IoTrashBinOutline, IoEllipsisVertical, IoBookmarkOutline } from "react-icons/io5";
 
 const trendingTags = ["Data Structures", "AI", "Web Dev", "DBMS", "Cyber Security", "Java", "Python"];
 
@@ -11,6 +11,8 @@ function Explore() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [activeTag, setActiveTag] = useState(null);
+  const [activeDropdown, setActiveDropdown] = useState(null);
+  const colors = ['#00ff00', '#ffff00', '#ff4d4d', '#cc00ff', '#00ccff'];
   const user = JSON.parse(localStorage.getItem('user'));
   const token = localStorage.getItem('token');
 
@@ -132,61 +134,103 @@ function Explore() {
             <div className="post-card" key={post.post_id} style={{ background: '#fff', borderRadius: '8px', border: '1px solid #dbdbdb', overflow: 'hidden', padding: '12px' }}>
               {/* Post Header */}
               <div className="post-header" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px', position: 'relative' }}>
-                <div style={{
-                  width: '32px', height: '32px', borderRadius: '50%',
-                  background: '#efefef', display: 'flex', alignItems: 'center',
-                  justifyContent: 'center', color: '#262626', fontWeight: 'bold',
-                  fontSize: '0.9rem', border: '1px solid #dbdbdb'
-                }}>
-                  {post.user_id?.[0]?.toUpperCase()}
-                </div>
+                <img
+                  src={post.profile_pic || `https://ui-avatars.com/api/?name=${post.username || post.user_id || 'User'}&background=random`}
+                  alt=""
+                  style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #dbdbdb' }}
+                />
                 <div>
-                  <div className="post-name" style={{ fontWeight: '600', fontSize: '0.9rem', color: '#262626' }}>{post.user_id}</div>
+                  <div className="post-name" style={{ fontWeight: '600', fontSize: '0.9rem', color: '#262626' }}>{post.username || post.user_id || "User"}</div>
                   <div className="post-username" style={{ fontSize: '0.75rem', color: '#8e8e8e' }}>
-                    {post.created_at ? new Date(post.created_at).toLocaleDateString() : ''}
+                    @{post.user_id} • {post.created_at ? new Date(post.created_at).toLocaleDateString() : ''}
                   </div>
                 </div>
-                {(user.user_id === post.user_id || user.user_id?.startsWith('MTR')) && (
+                <div style={{ position: 'absolute', right: 0 }}>
                   <button
-                    onClick={() => handleDeletePost(post.post_id)}
-                    style={{ background: 'none', border: 'none', color: '#ff4d4d', cursor: 'pointer', position: 'absolute', right: 0 }}
+                    onClick={() => setActiveDropdown(activeDropdown === post.post_id ? null : post.post_id)}
+                    className="more-options-btn"
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#8e8e8e' }}
                   >
-                    <IoTrashBinOutline size={18} />
+                    <IoEllipsisVertical size={20} />
                   </button>
-                )}
+                  {activeDropdown === post.post_id && (
+                    <div className="dropdown-menu" style={{
+                      position: 'absolute', right: 0, top: '24px', background: 'white',
+                      border: '1px solid #dbdbdb', borderRadius: '4px', boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+                      zIndex: 10, minWidth: '100px'
+                    }}>
+                      {(user.user_id === post.user_id || user.user_id?.startsWith('MTR')) && (
+                        <button
+                          onClick={() => { handleDeletePost(post.post_id); setActiveDropdown(null); }}
+                          style={{ width: '100%', padding: '8px 12px', background: 'none', border: 'none', color: '#ff4d4d', cursor: 'pointer', textAlign: 'left' }}
+                        >
+                          Delete
+                        </button>
+                      )}
+                      <button
+                        onClick={() => setActiveDropdown(null)}
+                        style={{ width: '100%', padding: '8px 12px', background: 'none', border: 'none', color: '#262626', cursor: 'pointer', textAlign: 'left' }}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
 
-              {/* Image */}
-              {post.image_url && (
+              {/* Content */}
+              {post.image_url ? (
                 <img src={post.image_url} alt="" className="post-image"
                   style={{ width: '100%', aspectRatio: '1/1', objectFit: 'cover', borderRadius: '4px', marginBottom: '10px' }}
                 />
+              ) : (
+                <div className="text-post" style={{
+                  backgroundColor: 'black',
+                  color: colors[(post.caption?.length || 0) % colors.length],
+                  padding: '40px 20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  minHeight: '200px',
+                  fontSize: '1.5rem',
+                  fontWeight: 'bold',
+                  textAlign: 'center',
+                  borderRadius: '4px',
+                  marginBottom: '10px'
+                }}>
+                  {post.caption}
+                </div>
               )}
 
               {/* Caption */}
-              {post.caption && (
+              {post.caption && post.image_url && (
                 <div className="post-caption" style={{ fontSize: '0.9rem', color: '#262626', marginBottom: '10px' }}>
-                  <strong>{post.user_id}</strong> {post.caption}
+                  <strong>{post.username || post.user_id || "User"}</strong> {post.caption}
                 </div>
               )}
 
               {/* Footer */}
               <div className="post-footer" style={{ borderTop: '1px solid #efefef', paddingTop: '10px' }}>
-                <button
-                  onClick={() => handleLike(post.post_id)}
-                  className="like-btn"
-                  style={{
-                    background: 'none', border: 'none', padding: '0',
-                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px'
-                  }}
-                >
-                  <span style={{ fontSize: '1.2rem' }}>
-                    {post.likes?.includes(user.user_id) ? '❤️' : '🤍'}
-                  </span>
-                  <span style={{ fontSize: '0.9rem', fontWeight: '600', color: '#262626' }}>
-                    {post.likes?.length || 0} Likes
-                  </span>
-                </button>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <button
+                    onClick={() => handleLike(post.post_id)}
+                    className="like-btn"
+                    style={{
+                      background: 'none', border: 'none', padding: '0',
+                      cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px'
+                    }}
+                  >
+                    <span style={{ fontSize: '1.2rem' }}>
+                      {post.likes?.includes(user.user_id) ? '❤️' : '🤍'}
+                    </span>
+                    <span style={{ fontSize: '0.9rem', fontWeight: '600', color: '#262626' }}>
+                      {post.likes?.length || 0} Likes
+                    </span>
+                  </button>
+                  <button className="save-btn" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#262626' }}>
+                    <IoBookmarkOutline size={24} />
+                  </button>
+                </div>
 
                  {/* Answers Display */}
                 {post.comments && post.comments.length > 0 && (

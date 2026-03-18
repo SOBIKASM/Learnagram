@@ -36,11 +36,6 @@ function Curriculum() {
                   </Link>
                 ))}
               </div>
-              <div style={{ marginTop: '15px', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '15px' }}>
-                <Link to={`/navigation/classroom?dept=${dept.name}`} className="glass-btn" style={{ background: 'rgba(255,255,255,0.1)', width: '100%', display: 'block', textAlign: 'center' }}>
-                  Open Classroom
-                </Link>
-              </div>
             </div>
           </div>
         ))}

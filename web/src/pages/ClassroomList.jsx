@@ -8,8 +8,6 @@ const ClassroomList = () => {
   const [classrooms, setClassrooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [newClassroom, setNewClassroom] = useState({ name: '', description: '' });
   const { user } = useAuth();
 
   useEffect(() => {
@@ -33,38 +31,25 @@ const ClassroomList = () => {
       setLoading(false);
     }
   };
-  const handleCreateClassroom = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await classroomAPI.createClassroom(newClassroom);
-      setClassrooms([...classrooms, response.data]);
-      setShowCreateModal(false);
-      setNewClassroom({ name: '', description: '' });
-    } catch (err) {
-      console.error("Error creating classroom:", err);
-      setError("Failed to create classroom");
-    }
-  };
 
-  const handleJoinClassroom = async (classId) => {
-    try {
-      await classroomAPI.joinClassroom(classId);
-      // Refresh the list to show updated member count
-      fetchClassrooms();
-    } catch (err) {
-      console.error("Error joining classroom:", err);
-      setError("Failed to join classroom");
-    }
-  };
+  if (loading) return <div className="loading" style={{ textAlign: 'center', marginTop: '50px', color: '#8e8e8e' }}>Loading classrooms...</div>;
 
-  if (loading) return <div className="loading">Loading classrooms...</div>;
+  // Generate a random gradient for each class banner
+  const gradients = [
+    "linear-gradient(135deg, #FF9A9E 0%, #FECFEF 100%)",
+    "linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)",
+    "linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)",
+    "linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)",
+    "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)",
+    "linear-gradient(135deg, #cfd9df 0%, #e2ebf0 100%)"
+  ];
 
   return (
     <div className="classroom-list-container">
       <div className="classroom-header">
-        <h2 className="gradient-text">Your Classrooms</h2>
+        <h2>Your Classrooms</h2>
         {user?.user_id?.startsWith('MTR') && (
-          <Link to="/navigation/classroom/create" className="create-btn" style={{ textDecoration: 'none' }}>
+          <Link to="/navigation/classroom/create" className="create-btn">
             + Create Classroom
           </Link>
         )}
@@ -72,22 +57,41 @@ const ClassroomList = () => {
 
       <div className="class-grid">
         {classrooms.length === 0 ? (
-          <div className="no-classrooms" style={{ color: '#aaa' }}>No classrooms found.</div>
+          <div className="no-classrooms" style={{ color: '#aaa', gridColumn: '1 / -1', textAlign: 'center', padding: '40px' }}>
+            No classrooms found.
+          </div>
         ) : (
-          classrooms.map((cls) => (
-            <div key={cls.classroom_id} className="class-card-wrapper">
-              <Link
-                to={`/navigation/classroom/${cls.classroom_id}`}
-                className="class-card"
-                style={{ textDecoration: 'none' }}
-              >
-                <h3>{cls.name}</h3>
-                <p>👨‍🏫 Mentor: {cls.mentor_id}</p>
-                <p>👥 Students: {cls.student_ids?.length || 0}</p>
-                <p style={{ fontSize: '0.8rem', color: '#888' }}>ID: {cls.classroom_id}</p>
-              </Link>
-            </div>
-          ))
+          classrooms.map((cls, index) => {
+            const gradient = gradients[index % gradients.length];
+            const initial = cls.name ? cls.name.charAt(0).toUpperCase() : "C";
+            return (
+              <div key={cls.classroom_id} className="class-card-wrapper">
+                <Link
+                  to={`/navigation/classroom/${cls.classroom_id}`}
+                  className="class-card"
+                >
+                  <div className="class-card-banner" style={{ background: gradient }}></div>
+                  <div className="class-card-content">
+                    <div className="class-icon-wrapper">
+                      <div className="class-icon">{initial}</div>
+                    </div>
+                    <h3 className="class-title">{cls.name}</h3>
+                    <div className="class-meta">
+                      <div className="class-meta-item">
+                        <span>👨‍🏫</span> <span>{cls.mentor_id}</span>
+                      </div>
+                      <div className="class-meta-item">
+                        <span>👥</span> <span>{cls.student_ids?.length || 0} Students</span>
+                      </div>
+                    </div>
+                    <div className="class-footer">
+                      ID: {cls.classroom_id}
+                    </div>
+                  </div>
+                </Link>
+              </div>
+            );
+          })
         )}
       </div>
     </div>

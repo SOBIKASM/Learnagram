@@ -38,16 +38,28 @@ function Profile() {
     <div className="profile-container">
       <header className="profile-header">
         <div className="avatar-section">
-          <img
-            src={userData.profile_pic || "/logo.png"}
-            alt="profile"
-            className="profile-photo"
-          />
+          {userData.profile_pic ? (
+            <img
+              src={userData.profile_pic}
+              alt="profile"
+              className="profile-photo"
+            />
+          ) : (
+            <div className="profile-photo placeholder" style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              backgroundColor: '#efefef', fontSize: '4rem', color: '#8e8e8e', fontWeight: 'bold'
+            }}>
+              {userData.username ? userData.username[0].toUpperCase() : 'U'}
+            </div>
+          )}
         </div>
 
         <section className="info-section">
           <div className="user-settings">
-            <h2 className="username">{userData.username || "username"}</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <h2 className="username" style={{ fontWeight: '600', margin: 0 }}>{userData.name || userData.username}</h2>
+              <span style={{ fontSize: '0.9rem', color: '#8e8e8e' }}>@{userData.user_id}</span>
+            </div>
             <button className="edit-btn">Edit Profile</button>
             <button className="archive-btn">View Archive</button>
           </div>
@@ -59,7 +71,6 @@ function Profile() {
           </div>
 
           <div className="bio">
-            <span className="full-name">{userData.name || userData.username}</span>
             {userData.department && (
               <span style={{ display: 'block', fontSize: '0.9rem', opacity: 0.8 }}>
                 {userData.department} {userData.year ? `• Year ${userData.year}` : ''}
@@ -86,9 +97,10 @@ function Profile() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              backgroundColor: '#efefef'
+              backgroundColor: post.image_url ? '#efefef' : 'black',
+              color: post.image_url ? 'inherit' : ['#00ff00', '#ffff00', '#ff4d4d', '#cc00ff', '#00ccff'][(post.caption?.length || 0) % 5]
             }}>
-              {!post.image_url && <span style={{ fontSize: '0.8rem', color: '#8e8e8e', textAlign: 'center', padding: '10px' }}>{post.caption?.substring(0, 30)}...</span>}
+              {!post.image_url && <div style={{ padding: '20px', textAlign: 'center', fontSize: '1rem', fontWeight: 'bold', wordBreak: 'break-word' }}>{post.caption?.length > 50 ? post.caption.substring(0, 50) + '...' : post.caption}</div>}
               <div className="overlay">
                 <div style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 'bold' }}>
                   ❤️ {post.likes?.length || 0} 💬 {post.comments?.length || 0}
