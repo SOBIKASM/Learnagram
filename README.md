@@ -1,6 +1,6 @@
 📚 Learnagram
 
-Learnagram is a full-stack interactive learning platform designed to make educational content engaging, structured, and accessible. It enables users to explore topics like astronomy, the periodic table, and world countries through an intuitive and visually appealing interface.
+Learnagram is a virtual academic interactive learning platform designed to make educational content engaging, structured, and accessible. It enables users to explore topics like astronomy, the periodic table, and world countries through an intuitive and visually appealing interface.
 
 🚀 Overview
 
@@ -24,7 +24,6 @@ Secure and scalable backend integration
 Frontend:
 
 React.js
-Tailwind CSS (if used)
 
 Backend:
 
